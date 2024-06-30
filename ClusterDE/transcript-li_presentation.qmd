@@ -1,0 +1,33 @@
+ClusterDE: a general statistical framework to counteract double dipping (?).
+
+Double dipping is prominent in both single-cell and spatial omics data (?).
+
+Differential expression analysis is one of the most widely performed analysis procedures in genomic data analysis.
+
+Specifically, for bulk RNA-seq data, the most common analysis setup is as follows. We have two conditions (?) and under each condition we have several replicate RNA-seq samples. Example: condition 1 is an untreated, control condition; condition 2 is a treated, diseased condition. For each gene, we perform a hypothesis test to examine whether single gene should have the same true expression level under the true conditions. If we reject the null hypothesis, we say the gene is differentially expressed, and we call it a DE gene. 
+
+This is a multiple testing problem, so if we want an overall test level of 0.05, we cannot use the same threshold for each individual test (10k) and must set the threshold in some other way. 
+
+FDR: the expectation of a ratio. The denominator is the number of discoveries (number of significant results). Numerator is the number false discoveries. This is **unobservable** because we don't know the ground truth, but we can still control this expectation.
+
+This is a frequentist FDR because the expectation is taken over all possible samples from the same population as our sample. Our sample is just one of many possible samples. We take the expectation over the distribution of possible samples. 
+
+Consider the Benjamini-Hochberg procedure for controlling FDR.
+
+Suppose we have $m$ genes. Each has a p-value. Sort them from smallest to largest. Our target FDR is q (e.g. 0.05).
+
+Compare each ordered p-value, starting from the smallest. Compare each to the varying threshold: (j / m) * q, where j = 1,..,k. Find k s.t. k is as large as possible. 
+
+Storey's q-value procedure has higher power, but the two give similar results.
+
+Important condition to make these procedure work: for non-DE genes, the p-values should be uniform between 0 and 1, and they should be independent. (i.e. valid)
+
+The p-values should also be high-resolution: if they are close to 0, they should have many digits, so we can compare them to the threshold. Coarse p-values may lead to very few rejections, i.e. low power. 
+
+(digression: p-values not valid somehow. But validity is important.)
+
+In the typical data analysis pipeline, there is an interesting difference between single-cell and bulk RNA-seq data. Suppose we have a single sc-RNA-seq sample. We measure the cells using something like FASTQ, perform quality control, and produce our count matrix, which indicates the gene expression level in the cell. The key task is cell-type annotation. We want to annotate cell types using the data. Recall that during our experiment, we measure all of the cells from the biological sample (maybe it's blood), but we don't have labels, so we don't know which cell is which. Therefore, we divide cells into clusters based on this matrix. We hope our clusters are good, i.e. each cluster coresponds to one cell type. But how do we know the cell type?
+
+We do differential expression analysis. By this, we mean we find the highly expressed genes in each cluster, and compare these genes to our knowledge (?) in order to give the cell cluster a type. This procedure is called post-cluster DE analysis.
+
+The interesting difference between this DE analysis adn the previous one is that, here, the clusters are not pre-defined. In bulk RNA-seq, we have patients who we know are in either a normal condition or a diseased condition. Here, we find clusters using the data. However, this leads to double dipping.

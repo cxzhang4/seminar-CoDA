@@ -1,0 +1,102 @@
+---
+title: ClusterDE
+subtitle: "a post-clustering differential expression method"
+author: Carson Zhang
+date: last-modified
+embed-resources: true
+format:
+  lmu_munich-revealjs: default
+---
+
+
+## Introduction
+
+### Background
+
+#### Biology
+
+TODO: give the basic biology background necessary to understand the paper.
+
+#### scRNA-seq
+
+TODO: give an explanation of scRNA-seq data collection and analysis.
+
+#### Double-dipping
+
+TODO: explain the double-dipping problem in differential expression analysis.
+
+## Method
+
+In words, the ClusterDE method can be broken up into four steps:
+
+1. Generate a synthetic null dataset that mimics the structure 
+(in particular, the gene-gene correlation structure) of the original data.
+
+2. Separately partition the synthetic null data and the target data (real data) into two clusters.
+
+3. Separately for the null and target data, perform hypothesis tests for differentially expressed genes between the two clusters. 
+For each gene, compute some sort of difference between the scores on the two datasets.
+
+4. Output a subset of the significant results from step 3 as potential cell-type marker genes.
+
+![An graphical illustration of ClusterDE.](ClusterDE_illustration.png)
+
+It is important to note that ClusterDE "does not provide an automatic decision about whether two clusters should be merged". Its outputs are potential DE genes, and therefore it does not directly measure the quality of a given clustering. These potential cell-type marker genes enable researchers to gain biological insights into the clusters, and they empower researchers to further explore the functional and molecular characteristics of the clusters.
+
+### Synthetic null generation
+
+The synthetic null generation consists of three steps, as described in the following figure.
+
+![Null generation steps.](ClusterDE_supp_null_generation.png)
+
+1. Model the null distribution in terms of the Gaussian copula.
+
+2. Fit the null model to the real data.
+
+3. Sample from the fitted null model.
+
+### 2. Clustering
+
+ClusterDE allows any clustering algorithm. Note that it only handles the case of two clusters, so if you started out with more clusters, you should identify a particular pair of interest. In the **Practical guidelines for ClusterDE usage** subsection, steps 1 and 2 describe how an analyst should proceed.
+
+1. Given $\geq 2$ clusters, identify 2 clusters of interest. Generally, this will be a pair for which you suspect the clustering is spurious (i.e. you think the two clusters actually come from the same cell type, so they are strong candidates to be merged into a single cluster).
+
+2. Filter the data so that you only consider the subset of cells that come from those two clusters.
+
+TODO: describe the Seurat clustering pipeline.
+
+#### UMAP
+
+UMAP is common.
+
+TODO: summarize UMAP.
+
+#### Louvain
+
+The example analyses in the presentation use the default Seurat clustering procedure, which uses the Louvain algorithm.
+
+TODO: summarize the Louvain algorithm.
+
+### 3. DE analysis (testing)
+
+ClusterDE allows any DE test.
+
+TODO: choose and summarize common DE tests.
+
+Let $P_1, ..., P_m$ be the p-values computed by the $m$ DE tests on the target data. 
+Define the target DE score $S_j := -\log_{10}P_j$. Likewise for the synthetic null data.
+
+The final outputs of step 3: $m$ target DE scores $S_1, ..., S_m$; $m$ null DE scores $\tilde{S}_1, ..., \tilde{S}_m$.
+
+### 4. FDR control
+
+Given the target and null DE scores, compute a contrast score for gene $j$ as $C_j := S_j - \tilde{S}_j$.
+
+## Results
+
+### Simulation
+
+### Real data example
+
+## Appendix
+
