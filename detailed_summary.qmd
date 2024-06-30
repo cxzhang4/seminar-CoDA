@@ -1,0 +1,25 @@
+A rewrite of the ClusterDE paper that is intelligible to me.
+
+## Abstract
+
+## Introduction
+
+## Results
+
+## How you can use ClusterDE
+
+The authors recommend the following process for applying ClusterDE.
+
+1. Given a set of cell clusters, find two clusters that may be defined as potential cell types or subtypes.
+
+  - For example, if you are using [Seurat](https://satijalab.org/seurat/), `BuildClusterTree()` can be used to construct a hierarchy of the clusters. You could then examine two leaf clusters for which you are not sure there is a true difference.
+  
+2. Construct a subset of the data that contains only the cells in the two clusters defined in step 1.
+
+3. Feed the subset constructed in step 2 into ClusterDE as the "target data".
+
+4. Examine the DE genes outputted by ClusterDE and decide whether the two cell clusters are biologically meaningful cell types or subtypes.
+
+## Nuances of using ClusterDE
+
+ClusterDE does **not** provide an automatic decision about whether two cluster should be merged, unlike some other methods. Instead, it focuses on identifying trustworthy post-clustering DE genes as potential cell-type marker genes. This enables researchers to gain biological insights into clusters by investigating the specific genes that distinguish the clusters. Thus, ClusterDE provides an advantage over clustering quality assessment methods, as ClusterDE empowers researchers to explore the functional and molecular characteristics of clusters (?).
