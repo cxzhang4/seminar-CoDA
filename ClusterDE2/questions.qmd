@@ -1,0 +1,28 @@
+---
+title: "Questions"
+format: html
+editor: visual
+embed-resources: true
+---
+
+## Basic biology
+
+- The "count matrix" is a matrix such that each row corresponds to a cell, and each column corresponds to a gene. However, even within a specific cell type, the counts ("expression levels") may vary, which is why we need to cluster cells in the first place. Does this variance in gene expression level ever occur due to errors in the measurement/sequencing process? And is "Single-Cell Expression Variability" the correct term for this?
+
+## Basic statistics
+
+- What exactly is the relationship between FDR and Type I error rate? They feel basically the same but I don't think they're exactly the same. In practice, do people use similar cutoffs (e.g. 0.05 by convention) for both?
+
+## Other statistical solutions for the double dipping problem
+
+- In gene-split, which, for each gene, treats the other $(m - 1)$ genes as training data and the chosen $1$ gene as test data , we perform $m$ clusterings, right? At 19:51 in [Professor Li's talk](https://youtu.be/6igkhX2fIew?si=4PjdGp2ySy2tl3rP&t=1191), I think she says you would perform $p * m$ clusterings, but I'm not sure where the factor of $p$ comes from.
+
+## The ClusterDE method
+
+- I'm generally a bit confused about the Clipper method for FDR control. The cutoff $T$ is presented as the smallest $t$ such that the ratio of contrast scores $< -t$ to the contrast scores $> t$ is under the desired FDR (sort of). Why exactly does this makes sense? Thinking about it more, I think it has to do with the (assumed) symmetry of the contrast score distribution. When contrast scores are symmetric (i.e. under the null), these two regions should be roughly equally likely. And the region less than $-t$ represents false discoveries in some sense.
+
+## Other
+
+- Does this generalize to any non scRNA-seq data? It feels like it should, but I didn't see a mention of other applications or generalizability in the paper.
+
+- Does the compositional nature of the data play a role? There was no mention of it in the paper, and as of now I don't have a good conceptual understanding of this property of the data.
