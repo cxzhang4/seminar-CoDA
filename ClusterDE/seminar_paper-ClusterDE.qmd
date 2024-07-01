@@ -29,15 +29,15 @@ format:
   #   keep-typ: true
 ---
 
-## Introduction
+# Introduction
 
-### Background
+## Background
 
-#### Biology
+## Biology
 
-TODO: give the basic biology background necessary to understand the paper.
+TODO: decide which of the following biology background is necessary to include in the presentation.
 
-##### RNA
+### RNA
 
 RNA carries the genetic information specific in DNA. There are two main types of RNA.
 
@@ -49,20 +49,35 @@ TODO: explain the jump from RNA to the UMI count matrix.
 
 TODO: define UMI.
 
-#### scRNA-seq
+### scRNA-seq
 
 TODO: give an explanation of scRNA-seq data collection and analysis.
 
-#### Double-dipping
-
-TODO: explain the double-dipping problem in differential expression analysis.
+## Double-dipping
 
 Biologists are interested in determining the cell types of the cells in a sample. (TODO: give a concrete example.)
-A natural way to do this might look like this:
-- Cluster the sample. We hope that each cluster represents a distinct cell type.
-- For each gene, 
 
-## Method
+A natural way to do this might look like this.
+
+- Cluster the sample. We hope that each cluster represents a distinct cell type.
+- For each gene, perform a hypothesis test comparing its expression levels between the two clusters.
+- Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.
+
+TODO: explain the double-dipping problem in differential expression analysis in more detail.
+
+However, this leads to double-dipping because we used the data twice.
+
+1. First, we clustered the cells.  The algorithm chose these two specific clusters because, in some sense, these two subsets of cells look the most different in terms of their gene expression levels. That is, the algorithm found variation in gene expression levels that drove this particular clustering.
+
+2. Next, we test each gene to see how different the expression levels are between the two clusters. However, we already know that this variation is there: that's how we got the clusters in the first place. So we are testing for variation that we already found through clustering, and therefore, we will find differentially expressed genes when we shouldn't.
+
+When we cluster a sample of a single cell type into two clusters, we cluster based on differences in gene expression that occurred due to random noise. This means we forced the genes to exhibit different distributions in the two clusters, so we are likely to find this forced variation instead of true variation in the dataset.
+
+TODO: give a concrete example of double dipping.
+
+# Method
+
+## ClusterDE method: 4 steps
 
 In words, the ClusterDE method can be broken up into four steps:
 
@@ -76,40 +91,104 @@ For each gene, compute some sort of difference between the scores on the two dat
 
 4. Output a subset of the significant results from step 3 as potential cell-type marker genes.
 
-![An graphical illustration of ClusterDE.](ClusterDE_illustration.png)
+## ClusterDE method
+
+![A graphical illustration of ClusterDE.](ClusterDE_illustration.png)
 
 It is important to note that ClusterDE "does not provide an automatic decision about whether two clusters should be merged". Its outputs are potential DE genes, and therefore it does not directly measure the quality of a given clustering. These potential cell-type marker genes enable researchers to gain biological insights into the clusters, and they empower researchers to further explore the functional and molecular characteristics of the clusters.
 
-### Synthetic null generation
+## 1. Synthetic null generation
 
 The synthetic null generation consists of three steps, as described in the following figure.
 
 ![Null generation steps.](ClusterDE_supp_null_generation.png)
 
-1. Model the null distribution in terms of the Gaussian copula.
+#### 1. Model the null distribution in terms of the Gaussian copula.
 
-TODO: state Sklar's Theorem.
+TODO: [explain the probability integral transform](https://blog.carsonzhang.com/posts/probability_integral_transform/).
+
+##### Sklar's Theorem
+
+**Theorem** (Sklar's Theorem): Let $\mathbf{X}$ be a $m$-dimensional random vector with joint cumulative distribution function $F$ and marginal distribution functions $F_j, j = 1, ..., m$. The joint CDF can be expressed as 
+
+$$
+F(x_1, ..., x_m) = C(F_1(x_1), ..., F_m(x_m))
+$$
+
+with associated probability density (or mass) function
+
+$$
+f(x_1, ..., x_m) = c(F_1(x_1), ..., F_m(x_m)) f_1(x_1) ... f_m(x_m)
+$$
+
+for a $d$-dimensional copula $C$ with copula density $c$. 
+
+The inverse also holds: the copula corresponding to a multivariate CDF $F$ with marginal distribution functions $F_j, j = 1, ..., m$ can be expressed as 
+
+$$
+C(u_1, ..., u_m) = F(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))
+$$
+, and the copula density (or mass) function is 
+
+$$
+c(u_1,...,u_m) = \frac{f(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))}
+  {f_1(F_1^{-1}(u_1)) ... f_m(F_m^{-1}(u_m))}
+$$
+.
+
+##### Why Sklar's Theorem
+
+Sklar's Theorem allows us to choose $C$, the specific copula function that we will use to approximate $F$. 
+For convenience, we choose $C$ to be a multivariate Gaussian distribution, since we know how to sample from it.
+Therefore, we have found a way to estimate the joint MVNB distribution of genes.
+
+$$
+C(\mathbf{u}; \mathbf{R}) = \Phi_{\mathbf{R}}(\Phi^{-1}(u_1), ..., \Phi^{-1}(u_m))
+$$
 
 Now, our goal is to estimate the parameters ${\mu_j, \sigma_j}_{j = 1}^m$ and $\mathbf{R}$. 
 
-2. Fit the null model to the real data.
+#### 2. Fit the null model to the real data.
 
 Recall that the power of the copula is that it allows us to consider the marginal distributions separately from the covariance structure. Therefore, we can proceed as follows.
 
-For each gene $j$, estimate ${\mu_j, \sigma_j}$ using maximum likelihood. These are the marginal distributions.
+For each gene $j$, estimate $\{\mu_j, \sigma_j\}$ using maximum likelihood. These are the marginal distributions.
 
-For the entire dataset, use the Gaussian copula to model the dependence structure:
-- Transform the raw data (counts) to the CDF values of the counts.
+For the entire dataset, use the Gaussian copula to model the dependence structure.
+
+- Transform the raw data (counts) to the CDF values of the counts. 
+  Given the parameters for each marginal distribution that we just generated, 
+  compute the CDFs specified by those parameters.
+- Transform the discrete CDF into a continuous $U(0, 1)$ variable.
+  Do this by computing $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$.
 - Transform the CDF values to standard Gaussian random variables.
+  That is, compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
 - Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute $\mathbf{\hat{R}}$.
-- Sample from this multivariate Gaussian distribution.
-- Transform the multivariate Gaussian sample to its CDF values.
+  $\mathbf{\hat{R}}$ is the sample correlation matrix of this data.
+- Sample from this multivariate Gaussian distribution: $N_m(\mathbf{0}, \mathbf{\hat{R}})$.
 
-3. Sample from the fitted null model.
-- Generate a sample of size $n$ from $N_m(\mathbf{0}, \mathbf{\hat{R}})$.
-- Convert them to negative binomial count vectors.
+#### 3. Sample from the fitted null model.
+- Generate a sample of size $n$ from $N_m(\mathbf{0}, \mathbf{\hat{R}})$. (Denote them as $\tilde{Z}_{ij}$ because each is standard Gaussian.)
 
-### 2. Clustering
+$$
+\begin{bmatrix} 
+    \tilde{Z}_{11} & \dots & \tilde{Z}_{1m} \\
+    \vdots & \ddots & \\
+    \tilde{Z}_{n1} &        & \tilde{Z}_{nm}
+\end{bmatrix}
+$$
+
+- Convert them to negative binomial count vectors. First we apply the marginal CDFs to transform them to $U(0, 1)$ random variables. Then, we apply the inverse of each negative binomial CDF to transform them to the proper counts (negative binomial random variables) for the corresponding gene.
+
+$$
+\begin{bmatrix} 
+    \hat{F}_1^{-1}(\Phi(\tilde{Z}_{11})) & \dots & \hat{F}_m^{-1}(\Phi(\tilde{Z}_{1m})) \\
+    \vdots & \ddots & \\
+    \hat{F}_1^{-1}(\Phi(\tilde{Z}_{n1})) &        & \hat{F}_m^{-1}(\Phi(\tilde{Z}_{nm}))
+\end{bmatrix}
+$$
+
+## 2. Clustering
 
 ClusterDE allows any clustering algorithm. Note that it only handles the case of two clusters, so if you started out with more clusters, you should identify a particular pair of interest. In the **Practical guidelines for ClusterDE usage** subsection, steps 1 and 2 describe how an analyst should proceed.
 
@@ -117,17 +196,17 @@ ClusterDE allows any clustering algorithm. Note that it only handles the case of
 
 2. Filter the data so that you only consider the subset of cells that come from those two clusters.
 
-TODO: describe the Seurat clustering pipeline.
-
 #### UMAP
 
-UMAP is common.
+UMAP is common in scRNA-seq analysis.
 
 TODO: summarize UMAP.
 
 #### Louvain
 
 The example analyses in the presentation use the default Seurat clustering procedure, which uses the Louvain algorithm.
+
+TODO: describe the Seurat clustering pipeline.
 
 TODO: summarize the Louvain algorithm.
 
@@ -152,9 +231,17 @@ In reality, we will have some more positive contrast scores than negative ones.
 
 In the case that there truly are two cell types, then we should definitely expect some true DE genes, and should therefore expect more positive contrast scores than negative ones. 
 
-Recall the contrast score formula: $C_j := S_j - \tilde{S}_j$. When this is positive, then the DE test on the target data was more surprising under the null, which means it outputted a smaller p-value. This *should* be the case if the null is false. This is why the authors say that, ideally, slightly less than 50% of all genes' contrast scores should be negative. We want to satisfy the symmetry requirement of Clipper.
+Recall the contrast score formula: $C_j := S_j - \tilde{S}_j$. When this is positive, then the DE test on the target data was more surprising under the null, which means it outputted a smaller p-value. This *should* be the case if the null is false. This is why the authors say that, ideally, slightly less than 50% of all genes' contrast scores should be negative: sometimes, the null is false, and when that is the case, we will see additional values in the right tail (and only in the right tail) of the contrast score distribution.
+
+<!-- We want to satisfy the symmetry requirement of Clipper. This is analogous to the uniform p-value assumption in other hypothesis tests.    -->
+
+![FDR control.](ClusterDE_illustration-fdr_control.png){width=50%}
 
 Motivation for the cutoff: under the null hypothesis, we have a symmetric distribution of contrast scores. Assume the negative tail is differences due to random noise. Under the null hypothesis, the right tail would be the same size. 
+
+Our real right tail will be bigger (we hope), since there are true differentially expressed genes which we will discover. And each of these will appear in the right tail. So any instances where the null is violated will appear only in the right tail.
+
+We choose the minimum $t$ to maximize our discoveries, i.e. to "use" all of the false discoveries that we can.
 
 ## Results
 
