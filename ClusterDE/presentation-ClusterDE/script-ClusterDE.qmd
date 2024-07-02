@@ -33,25 +33,7 @@ format:
 
 ## Background
 
-## Biology
-
-TODO: decide which of the following biology background is necessary to include in the presentation.
-
-### RNA
-
-RNA carries the genetic information specific in DNA. There are two main types of RNA.
-
-**Non-coding RNA** performs some biological function.
-
-**Messenger RNA** forms a template for protein production (it codes for a protein which performs some biological function).
-
-TODO: explain the jump from RNA to the UMI count matrix.
-
-TODO: define UMI.
-
-### scRNA-seq
-
-TODO: give an explanation of scRNA-seq data collection and analysis.
+TODO: determine the background material that I should cover. Some of this is in the Appendix already.
 
 ## Double-dipping
 
@@ -73,7 +55,11 @@ However, this leads to double-dipping because we used the data twice.
 
 When we cluster a sample of a single cell type into two clusters, we cluster based on differences in gene expression that occurred due to random noise. This means we forced the genes to exhibit different distributions in the two clusters, so we are likely to find this forced variation instead of true variation in the dataset.
 
-TODO: give a concrete example of double dipping.
+## Double-dipping example
+
+![Figure S16](figures/S16.jpg)
+
+This is illustrated in the above example. We forced the genes to have different distributions between the clusters (in this clustering, cluster 1 has significantly higher expression levels for both genes). Therefore, our tests are significant.
 
 # Method
 
@@ -107,6 +93,8 @@ The synthetic null generation consists of three steps, as described in the follo
 
 TODO: [explain the probability integral transform](https://blog.carsonzhang.com/posts/probability_integral_transform/).
 
+To do this, we will need Sklar's Theorem.
+
 ## Sklar's Theorem
 
 **Theorem** (Sklar's Theorem): Let $\mathbf{X}$ be a $m$-dimensional random vector with joint cumulative distribution function $F$ and marginal distribution functions $F_j, j = 1, ..., m$. The joint CDF can be expressed as 
@@ -136,7 +124,7 @@ c(u_1,...,u_m) = \frac{f(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))}
 $$
 .
 
-## 1. Why Sklar's Theorem
+## Why Sklar's Theorem?
 
 Sklar's Theorem allows us to choose $C$, the specific copula function that we will use to approximate $F$. 
 For convenience, we will choose $C$ to be a multivariate Gaussian distribution, since we know how to sample from it.
@@ -161,7 +149,7 @@ Separately, use the Gaussian copula to model the dependence structure.
 - Transform the raw data (counts) to the CDF values of the counts. 
   Given the parameters for each marginal distribution that we just generated, 
   compute the CDFs specified by those parameters.
-- Transform the discrete CDF into a continuous $U(0, 1)$ variable.
+- Transform the discrete CDF values into continuous $U(0, 1)$ variables.
   Do this by computing $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$.
 - Transform the CDF values to standard Gaussian random variables.
   That is, compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
@@ -215,14 +203,29 @@ TODO: summarize the Louvain algorithm.
 
 ## 3. DE analysis (testing)
 
-ClusterDE allows any DE test.
+ClusterDE allows any DE test. 
 
-TODO: choose and summarize a common DE test(s), e.g. Wilcoxon.
+TODO: choose and summarize a common DE test(s), e.g. Wilcoxon, since it performs well when analyzing a homogeneous sample.
 
 Let $P_1, ..., P_m$ be the p-values computed by the $m$ DE tests on the target data. 
+
+ClusterDE allows any summary statistic $t$ and computes the contrast score as:
+
+$$C_j = t(\text{target data}) - t(\text{synthetic null data})$$
+
+However, the authors propose the following $t$.
+
 Define the target DE score $S_j := -\log_{10}P_j$. Likewise for the synthetic null data.
 
-TODO: motivate the formula for the DE score. It is essentially the information content of the p-value.
+Motivation for this formula: it is extremely similar to the $S$-value.
+
+$$
+S = -\log_2(P)
+$$
+
+This is exactly the information content of the observed p-value, i.e. how surprising the p-value was. So, the difference in S-values can be thought of as how much more surprising the target test re sult was than the null test result.
+
+Under $H_0$, this will satisfy symmetry, one of the requirements for the FDR control method. This is because, if the null hypothesis is true, neither dataset should systematically contain more DE genes than the other.
 
 The final outputs of step 3: $m$ target DE scores $S_1, ..., S_m$; $m$ null DE scores $\tilde{S}_1, ..., \tilde{S}_m$.
 
@@ -244,12 +247,48 @@ Motivation for the cutoff: under the null hypothesis, we have a symmetric distri
 
 Our real right tail will be bigger (we hope), since there are true differentially expressed genes which we will discover. And each of these will appear in the right tail. So any instances where the null is violated will appear only in the right tail.
 
+Our contrast score cutoff is:
+
+$$
+t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:C_j \geq t\} \lor 1} \leq q\right\}
+$$
+
 We choose the minimum $t$ to maximize our discoveries, i.e. to "use" all of the false discoveries that we can.
 
 ## Results
 
-### Simulation
+TODO: choose and describe example analyses from the paper.
 
-### Real data example
+## Alternative strategies for synthetic null generation
+
+Generating the synthetic null dataset as described earlier preserves more of the original structure of the data.
+
+Generating the synthetic null dataset as described earlier preserves more of the original structure of the data, compared to using knockoffs or permuting the genes.
+
+TODO: describe knockoffs.
+
+TODO: describe gene permutation.
+
+![Comparison of synthetic null generation strategies.](figures/S7.png)
 
 ## Appendix
+
+## Biology
+
+TODO: decide which of the following biology background is necessary to include in the presentation.
+
+### RNA
+
+RNA carries the genetic information specific in DNA. There are two main types of RNA.
+
+**Non-coding RNA** performs some biological function.
+
+**Messenger RNA** forms a template for protein production (it codes for a protein which performs some biological function).
+
+TODO: explain the jump from RNA to the UMI count matrix.
+
+TODO: define UMI.
+
+### scRNA-seq
+
+TODO: give an explanation of scRNA-seq data collection and analysis.
