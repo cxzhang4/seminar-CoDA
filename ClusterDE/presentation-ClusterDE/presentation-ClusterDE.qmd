@@ -70,9 +70,7 @@ Use **cell-type marker genes** to identify cell types.
 
 ![a potential set of cell-type markers](figures/pbmc_vignette-ClusterDE_top_DE-3_genes.png)
 
-## Identifying markers
-
-Hypothesis tests give us **candidates** for cell-type markers.
+## Identifying candidate markers
 
 ![top DE genes identified by hypothesis tests](figures/pbmc_vignette-ClusterDE_top_DE.png)
 
@@ -162,7 +160,7 @@ plot(data,
      pch = 16)
 ```
 
-## How do we handle correlated variables?
+## How do we handle correlation?
 
 ```{r echo=FALSE}
 # LLM code
@@ -257,24 +255,19 @@ Now, our goal is to estimate:
 
 - the covariance matrix$\mathbf{R}$
 
-## 2. Fit the null model to the real data.
-
-### Independently estimate the marginals
+## 2. Independently estimate the marginals
 
 For each gene $j$, estimate $\{\mu_j, \sigma_j\}$ using maximum likelihood. These are the marginal distributions.
 
-Separately, use the Gaussian copula to model the dependence structure.
+![](figures/ClusterDE_supp_null_generation-marginal.png)
 
-## 2. (cont.) `rmvnb()` using the Gaussian copula
+## 2. Estimate the covariance structure
 
-## Estimate the covariance structure
+![](figures/ClusterDE_supp_null_generation-covariance.png)
 
-Separately, use the Gaussian copula to model the dependence structure.
+## 3. *Couple* them with the copula
 
-- Transform the raw data (counts) to the CDF values of the counts. 
-- Transform the discrete CDF values into continuous $U(0, 1)$ variables: $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$.
-- Transform the CDF values to standard Gaussian random variables: compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
-- Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute the sample correlation $\mathbf{\hat{R}}$.
+![](figures/ClusterDE_supp_null_generation.png)
 
 ## 3. Sample from the fitted null model.
 
@@ -317,10 +310,6 @@ $$
 
 ## 4. FDR control
 
-TODO: explain what Clipper is.
-
-TODO: add a reminder of the FDR problem.
-
 Given the target and null DE scores, compute a contrast score for gene $j$ as $C_j := S_j - \tilde{S}_j$.
 
 ![FDR control.](figures/ClusterDE_illustration-fdr_control.png)
@@ -344,16 +333,6 @@ $$
   - homogeneous cell line (e.g. H2228): no DE genes
   
   - different cell types: biologically meaningful DE genes
-
-## Results: homogeneous cell line
-
-H2228: "the gold standard for benchmarking the accuracy of clustering."
-
-![One true cluster](figures/cellline_vignette-bad_clusters.png)
-
-## Results: 0 DE genes
-
-![Successfully identified no DE genes](figures/cellline_vignette-0_DE_genes.png)
 
 ## Results: PBMC dataset
 
@@ -383,7 +362,7 @@ H2228: "the gold standard for benchmarking the accuracy of clustering."
 
 - Permutation:
 
-  - Independently 
+  - Independently permute the genes (shuffle vectors)
   
 ## Performance of alternative strategies
 
@@ -393,23 +372,25 @@ H2228: "the gold standard for benchmarking the accuracy of clustering."
 
 #### Context
 
-What is differential expression?
+We want to identify cell types. DE identifies candidates for cell-type marker genes.
 
 #### Motivation
 
-What are the problems with existing methods?
+Traditional DE discovery methods double-dip, increasing the risk of false discovery.
 
 #### Method
 
-How does ClusterDE solve these problems?
+ClusterDE generates a synthetic null dataset before the pipeline, and combines the parallel results in a meaningful way using Clipper.
+
+## Conclusion (cont.)
 
 #### Benchmark results
 
-Does ClusterDE really solve these problems?
+ClusterDE performs in simulations and real data, when there are and aren't distinct cell types.
 
 #### Alternatives and extensions
 
-What are other variations on ClusterDE that we might consider?
+The copula strategy for null generation has better power and FDR.
 
 ## Appendix
 
@@ -443,4 +424,22 @@ ClusterDE outperforms other methods when
 
 The copula generation strategy outperforms other alternatives in terms of FDR and power.
 
+## Results: homogeneous cell line
+
+H2228: "the gold standard for benchmarking the accuracy of clustering."
+
+![One true cluster](figures/cellline_vignette-bad_clusters.png)
+
+## Results: 0 DE genes
+
+![Successfully identified no DE genes](figures/cellline_vignette-0_DE_genes.png)
+
+## 2. Estimate the covariance structure
+
+Separately, use the Gaussian copula to model the dependence structure.
+
+- Transform the raw data (counts) to the CDF values of the counts. 
+- Transform the discrete CDF values into continuous $U(0, 1)$ variables: $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$.
+- Transform the CDF values to standard Gaussian random variables: compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
+- Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute the sample correlation $\mathbf{\hat{R}}$.
 
