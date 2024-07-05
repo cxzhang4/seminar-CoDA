@@ -3103,8 +3103,16 @@ window.Quarto = {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
   <ul class="collapse">
+  <li><a href="#outline" id="toc-outline" class="nav-link" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+  <li><a href="#what-is-the-analysis-goal" id="toc-what-is-the-analysis-goal" class="nav-link" data-scroll-target="#what-is-the-analysis-goal">What is the analysis goal?</a></li>
+  <li><a href="#what-are-the-problems-with-existing-methods" id="toc-what-are-the-problems-with-existing-methods" class="nav-link" data-scroll-target="#what-are-the-problems-with-existing-methods">What are the problems with existing methods?</a></li>
+  <li><a href="#how-does-clusterde-solve-them" id="toc-how-does-clusterde-solve-them" class="nav-link" data-scroll-target="#how-does-clusterde-solve-them">How does ClusterDE solve them?</a></li>
+  <li><a href="#does-clusterde-really-solve-them" id="toc-does-clusterde-really-solve-them" class="nav-link" data-scroll-target="#does-clusterde-really-solve-them">Does ClusterDE really solve them?</a></li>
+  <li><a href="#what-are-other-ideas-that-might-not-work-to-solve-these" id="toc-what-are-other-ideas-that-might-not-work-to-solve-these" class="nav-link" data-scroll-target="#what-are-other-ideas-that-might-not-work-to-solve-these">What are other ideas that might (not) work to solve these?</a></li>
+  </ul></li>
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
-  <li><a href="#double-dipping" id="toc-double-dipping" class="nav-link" data-scroll-target="#double-dipping">Double-dipping</a></li>
+  <li><a href="#double-dipping-the-problem-with-naive-methods" id="toc-double-dipping-the-problem-with-naive-methods" class="nav-link" data-scroll-target="#double-dipping-the-problem-with-naive-methods">Double-dipping: the problem with naive methods</a></li>
   <li><a href="#why-testing-after-clustering-is-problematic" id="toc-why-testing-after-clustering-is-problematic" class="nav-link" data-scroll-target="#why-testing-after-clustering-is-problematic">Why testing after clustering is problematic</a></li>
   <li><a href="#double-dipping-example" id="toc-double-dipping-example" class="nav-link" data-scroll-target="#double-dipping-example">Double-dipping example</a></li>
   </ul></li>
@@ -3123,6 +3131,12 @@ window.Quarto = {
   <li><a href="#fdr-control" id="toc-fdr-control" class="nav-link" data-scroll-target="#fdr-control">4. FDR control</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#alternative-strategies-for-synthetic-null-generation" id="toc-alternative-strategies-for-synthetic-null-generation" class="nav-link" data-scroll-target="#alternative-strategies-for-synthetic-null-generation">Alternative strategies for synthetic null generation</a></li>
+  <li><a href="#alternatives-for-controlling-fdr" id="toc-alternatives-for-controlling-fdr" class="nav-link" data-scroll-target="#alternatives-for-controlling-fdr">Alternatives for controlling FDR</a>
+  <ul class="collapse">
+  <li><a href="#things-that-work" id="toc-things-that-work" class="nav-link" data-scroll-target="#things-that-work">Things that work</a></li>
+  <li><a href="#things-that-work-sometimes" id="toc-things-that-work-sometimes" class="nav-link" data-scroll-target="#things-that-work-sometimes">Things that work sometimes</a></li>
+  <li><a href="#things-that-dont-work" id="toc-things-that-dont-work" class="nav-link" data-scroll-target="#things-that-dont-work">Things that don’t work</a></li>
+  </ul></li>
   <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a></li>
   <li><a href="#biology" id="toc-biology" class="nav-link" data-scroll-target="#biology">Biology</a>
   <ul class="collapse">
@@ -3168,18 +3182,43 @@ window.Quarto = {
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
+<section id="outline" class="level2">
+<h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="what-is-the-analysis-goal" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-the-analysis-goal">What is the analysis goal?</h3>
+<p>Which type of scRNA-seq analysis do we ultimately want to do?</p>
+</section>
+<section id="what-are-the-problems-with-existing-methods" class="level3">
+<h3 class="anchored" data-anchor-id="what-are-the-problems-with-existing-methods">What are the problems with existing methods?</h3>
+<p>Why are obvious, natural approaches to differential expression analysis inadequate?</p>
+</section>
+<section id="how-does-clusterde-solve-them" class="level3">
+<h3 class="anchored" data-anchor-id="how-does-clusterde-solve-them">How does ClusterDE solve them?</h3>
+<p>Explanation of the method.</p>
+</section>
+<section id="does-clusterde-really-solve-them" class="level3">
+<h3 class="anchored" data-anchor-id="does-clusterde-really-solve-them">Does ClusterDE really solve them?</h3>
+<p>Compare ClusterDE’s performance against other methods on real datasets.</p>
+</section>
+<section id="what-are-other-ideas-that-might-not-work-to-solve-these" class="level3">
+<h3 class="anchored" data-anchor-id="what-are-other-ideas-that-might-not-work-to-solve-these">What are other ideas that might (not) work to solve these?</h3>
+<p>Consider potential modifications to the ClusterDE method.</p>
+</section>
+</section>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>TODO: determine the background material that I should cover. Some of this is in the Appendix already.</p>
+<p>We want to identify cell-type marker genes. We will use these to identify cell types.</p>
+<p>TODO: add motivation for cell type identification.</p>
+<p>TODO: define and add motivation for identifying cell-type marker genes.</p>
+<p>TODO: add the count matrix.</p>
 </section>
-<section id="double-dipping" class="level2">
-<h2 class="anchored" data-anchor-id="double-dipping">Double-dipping</h2>
-<p>Biologists are interested in determining the cell types of the cells in a sample. (TODO: give a concrete example.)</p>
+<section id="double-dipping-the-problem-with-naive-methods" class="level2">
+<h2 class="anchored" data-anchor-id="double-dipping-the-problem-with-naive-methods">Double-dipping: the problem with naive methods</h2>
+<p>TODO: add the notation for the theory: basically, since clustering is imperfect, theory tells us that even if our decision is correct wrt the clusters, it may not be correct wrt the true cell type.</p>
 <p>A natural way to do this might look like this.</p>
 <ul>
 <li>Cluster the sample. We hope that each cluster represents a distinct cell type.</li>
 <li>For each gene, perform a hypothesis test comparing its expression levels between the two clusters.</li>
-<li>Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.</li>
 </ul>
 </section>
 <section id="why-testing-after-clustering-is-problematic" class="level2">
@@ -3368,6 +3407,8 @@ t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
 <p>TODO: choose and describe example analyses from the paper.</p>
+<p>TODO: describe an example analysis on a homogeneous sample: ideally, identify 0 DE genes.</p>
+<p>TODO: describe an example analysis on a sample with known cell types: ideally, identify biologically meaningful DE genes.</p>
 </section>
 <section id="alternative-strategies-for-synthetic-null-generation" class="level2">
 <h2 class="anchored" data-anchor-id="alternative-strategies-for-synthetic-null-generation">Alternative strategies for synthetic null generation</h2>
@@ -3381,6 +3422,28 @@ t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:
 <figcaption>Comparison of synthetic null generation strategies.</figcaption>
 </figure>
 </div>
+</section>
+<section id="alternatives-for-controlling-fdr" class="level2">
+<h2 class="anchored" data-anchor-id="alternatives-for-controlling-fdr">Alternatives for controlling FDR</h2>
+<p>TODO: write up explanations for all of these</p>
+<section id="things-that-work" class="level3">
+<h3 class="anchored" data-anchor-id="things-that-work">Things that work</h3>
+<ul>
+<li>Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.</li>
+</ul>
+</section>
+<section id="things-that-work-sometimes" class="level3">
+<h3 class="anchored" data-anchor-id="things-that-work-sometimes">Things that work sometimes</h3>
+<ul>
+<li>Count splitting: sample gene counts to create two datasets</li>
+</ul>
+</section>
+<section id="things-that-dont-work" class="level3">
+<h3 class="anchored" data-anchor-id="things-that-dont-work">Things that don’t work</h3>
+<ul>
+<li>Splitting the data</li>
+</ul>
+</section>
 </section>
 <section id="appendix" class="level2">
 <h2 class="anchored" data-anchor-id="appendix">Appendix</h2>

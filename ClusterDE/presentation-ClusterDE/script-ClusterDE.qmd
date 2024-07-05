@@ -31,19 +31,46 @@ format:
 
 # Introduction
 
+## Outline
+
+### What is the analysis goal?
+
+For context, which type of scRNA-seq analysis do we ultimately want to do?
+
+### What are the problems with existing methods?
+
+Why are obvious, natural approaches to differential expression analysis inadequate?
+
+### How does ClusterDE solve them?
+
+Explanation of the method.
+
+### Does ClusterDE really solve them?
+
+Compare ClusterDE's performance against other methods on real datasets.
+
+### What are other ideas that might (not) work to solve these?
+
+Consider potential modifications to the ClusterDE method.
+
 ## Background
 
-TODO: determine the background material that I should cover. Some of this is in the Appendix already.
+We want to identify cell-type marker genes. We will use these to identify cell types.
 
-## Double-dipping
+TODO: add motivation for cell type identification.
 
-Biologists are interested in determining the cell types of the cells in a sample. (TODO: give a concrete example.)
+TODO: define and add motivation for identifying cell-type marker genes.
+
+TODO: add the count matrix.
+
+## Double-dipping: the problem with naive methods
+
+TODO: add the notation for the theory: basically, since clustering is imperfect, theory tells us that even if our decision is correct wrt the clusters, it may not be correct wrt the true cell type.
 
 A natural way to do this might look like this.
 
 - Cluster the sample. We hope that each cluster represents a distinct cell type.
 - For each gene, perform a hypothesis test comparing its expression levels between the two clusters.
-- Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.
 
 ## Why testing after clustering is problematic
 
@@ -257,7 +284,21 @@ We choose the minimum $t$ to maximize our discoveries, i.e. to "use" all of the 
 
 ## Results
 
+### Cell line analysis: no DE genes
+
+### PBMC dataset: meaningful DE genes
+
 TODO: choose and describe example analyses from the paper.
+
+TODO: describe an example analysis on a homogeneous sample: ideally, identify 0 DE genes.
+
+## Cell line analysis
+
+A cell line is a homogeneous 
+
+TODO: describe an example analysis on a sample with known cell types: ideally, identify biologically meaningful DE genes.
+
+## 
 
 ## Alternative strategies for synthetic null generation
 
@@ -270,6 +311,22 @@ TODO: describe knockoffs.
 TODO: describe gene permutation.
 
 ![Comparison of synthetic null generation strategies.](figures/S7.png)
+
+## Alternatives for controlling FDR
+
+TODO: write up explanations for all of these
+
+### Things that work
+
+- Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.
+
+### Things that work sometimes
+
+- Count splitting: sample gene counts to create two datasets
+
+### Things that don't work
+
+- Splitting the data
 
 ## Appendix
 

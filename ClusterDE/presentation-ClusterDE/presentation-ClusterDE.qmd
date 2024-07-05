@@ -8,63 +8,207 @@ format:
   lmu_munich-revealjs: default
 ---
 
-# Introduction
+## Outline
 
-## Background
+#### Context
 
-TODO: determine the background material that I should cover. Some of this is in the Appendix already.
+What is differential expression?
 
-## Double-dipping
+#### Motivation
 
-Biologists are interested in determining the cell types of the cells in a sample.
+What are the problems with existing methods?
 
-A natural approach:
+#### Method
 
-- Cluster the sample. We hope that each cluster represents a distinct cell type.
-- For each gene, perform a hypothesis test comparing its expression levels between the two clusters.
-- Applying a multiple testing correction procedure (e.g. Benjamini-Hochberg), determine which null hypotheses to reject: which genes you will say are differentially expressed.'
+How does ClusterDE solve these problems?
+
+#### Benchmark results
+
+Does ClusterDE really solve these problems?
+
+#### Alternatives and extensions
+
+What are other variations on ClusterDE that we might consider?
+
+## Data setup
+
+Cell-by-gene matrix:
+
+$$
+\begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} \\
+    \vdots & \ddots & \\
+    Y_{n1} &        & Y_{nm}
+\end{bmatrix}
+$$
+
+## Differential expression
+
+Ultimate goal: identify cell types.
+
+$$
+\begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} & Z_1\\
+    \vdots & \ddots & & \vdots \\ 
+    Y_{n1} &        & Y_{nm} & Z_n
+\end{bmatrix}
+$$
+
+Assumption: only 2 cell types! 
+
+$$
+Z_i \in \{0, 1\}
+$$
+
+## Cell-type markers
+
+Use **cell-type marker genes** to identify cell types.
+
+![a potential cell-type marker](figures/pbmc_vignette-ClusterDE_top_DE-1_gene.png)
+
+## Combinations as better markers
+
+![a potential set of cell-type markers](figures/pbmc_vignette-ClusterDE_top_DE-3_genes.png)
+
+## Identifying markers
+
+Hypothesis tests give us **candidates** for cell-type markers.
+
+![top DE genes identified by hypothesis tests](figures/pbmc_vignette-ClusterDE_top_DE.png)
 
 ## Double-dipping example
 
 ![Figure S16](figures/S16.jpg)
 
-## Why testing after clustering is problematic
+## Problem with testing after clustering
 
 However, we used the data twice.
 
-1. First, we clustered the cells.  The algorithm chose these two specific clusters because, in some sense, these two subsets of cells look the most different in terms of their gene expression levels.
+1. We clustered the cells.
 
-2. Next, we test each gene to see how different the expression levels are between the two clusters. However, we already know that this variation is there: that's how we got the clusters in the first place. So we are testing for variation that we already found through clustering.
+2. We tested each gene to see how different the expression levels are between the two clusters. However, we already know that this variation is there.
 
-In other words: we forced the genes to exhibit different distributions in the two clusters, so we are likely to find this forced variation instead of true variation in the dataset.
+In other words: we **forced** the genes to exhibit different distributions in the two clusters.
 
-# Method
+When our clusters are bad, we open ourselves up to false discoveries.
 
-## ClusterDE method: 4 steps
+## Double-dipping theory
 
-In words, the ClusterDE method can be broken up into four steps:
+We only consider two cell types, so $Z \in \{0, 1\}$
 
-1. Generate a synthetic null dataset that mimics the structure 
-(in particular, the gene-gene correlation structure) of the original data.
+We want to test
 
-2. Separately partition the synthetic null data and the target data (real data) into two clusters.
+$$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
 
-3. Separately for the null and target data, perform hypothesis tests for differentially expressed genes between the two clusters. 
-For each gene, compute some sort of difference between the p-values on the two datasets.
+But we can only test
+$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$
 
-4. Output a subset of the significant results from step 3 as potential cell-type marker genes.
+## The relationship between double-dipping and FDR 
 
-## ClusterDE
+False discoveries occur when this does NOT hold
+
+$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$ , but this holds $$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
+
+In words: we made the right decision, but we set up the wrong test.
+
+## FDR
+
+We test in order to **discover** differentially expressed genes.
+
+**False discoveries** are genes that are not 
+
+$$
+\text{FDR} := \# 
+$$
+
+# How do we solve this problem?
+
+## ClusterDE: 4 steps
 
 ![A graphical illustration of ClusterDE.](figures/ClusterDE_illustration.png)
 
-## 1. Synthetic null generation
+## 1. Motivation for synthetic null data
 
-The synthetic null generation consists of three steps, as described in the following figure.
+Intuition: compute differences between the real data and a concrete null hypothesis.
+
+Differences from this synthetic data imply differentially expressed genes.
+
+## `rmvnb()`?
+
+Assumption: each gene follows a negative binomial distribution.
+
+$$
+Y_j \sim NB(\mu_j, \sigma_j^2)
+$$
+
+But our data doesn't look like this:
+
+```{r}
+# LLM code
+
+library(mvtnorm)
+
+set.seed(123)
+
+# Generate multivariate normal data with independent variables
+n <- 1000  # number of points
+mu <- c(0, 0)  # mean vector
+sigma <- matrix(c(1, 0, 0, 1), nrow = 2)  # covariance matrix (diagonal for independence)
+data <- rmvnorm(n, mean = mu, sigma = sigma)
+
+# Create scatter plot
+plot(data,
+     col = "blue", 
+     pch = 16)
+```
+
+## How do we handle correlated variables?
+
+```{r echo=FALSE}
+# LLM code
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Generate multivariate normal data
+n <- 1000  # number of points
+mu <- c(0, 0)  # mean vector
+sigma <- matrix(c(1, 0.7, 0.7, 1), nrow = 2)  # covariance matrix
+data <- rmvnorm(n, mean = mu, sigma = sigma)
+
+# Create scatter plot
+plot(data,
+     col = "blue", 
+     pch = 16)
+```
+
+## Implementing `rmvnb()`
 
 ![Null generation steps.](figures/ClusterDE_supp_null_generation.png)
 
-#### 1. Model the null distribution in terms of the Gaussian copula.
+## Probability integral transform
+
+**Theorem (Probability Integral Transform):** $F_X(X) \sim \text{Uniform}(0, 1)$.
+
+**Proof**: the standard proof of the PIT found on the [Wikipedia page](https://en.wikipedia.org/wiki/Probability_integral_transform).
+
+$$
+\begin{align}
+  F_Y(y) &= P(Y \leq y)\\
+    &= P(F_X(X) \leq y) && \text{(substituted the definition of } Y)\\
+    &= P(X \leq F_X^{-1}(y)) && \text{(applied } F_X^{-1} \text{ to both sides)}\\
+    &= F_X(F_X^{-1}(y)) && \text{(the definition of a CDF)}\\
+    &= y
+\end{align}
+$$
+
+## PIT: takeaway and inverse
+
+We can transform a random variable into a different random variable using their CDFs.
+
+$$U = F_X(X) \sim \text{Uniform}(0, 1)$$
+
+$$X = F_X^{-1}(U)$$
 
 ## Sklar's Theorem
 
@@ -80,7 +224,7 @@ $$
 f(x_1, ..., x_m) = c(F_1(x_1), ..., F_m(x_m)) f_1(x_1) ... f_m(x_m)
 $$
 
-for a $d$-dimensional copula $C$ with copula density $c$. 
+for a $m$-dimensional copula $C$ with copula density $c$. 
 
 ## Sklar's Theorem (cont.)
 
@@ -99,30 +243,38 @@ $$
 
 ## Why Sklar's Theorem?
 
-Sklar's Theorem allows us to choose $C$, the specific copula function that we will use to approximate $F$. 
-For convenience, we will choose $C$ to be a multivariate Gaussian distribution, since we know how to sample from it.
-Therefore, we have found a way to estimate the joint MVNB distribution of genes.
+Sklar's theorem allows us to **separately** model the individual variables and their dependence.
+
+For convenience, we will choose the Gaussian copula.
 
 $$
 C(\mathbf{u}; \mathbf{R}) = \Phi_{\mathbf{R}}(\Phi^{-1}(u_1), ..., \Phi^{-1}(u_m))
 $$
 
-Now, our goal is to estimate the parameters ${\mu_j, \sigma_j}_{j = 1}^m$ and $\mathbf{R}$. 
+Now, our goal is to estimate: 
+
+- the marginal parameters $\{\mu_j, \sigma_j\}_{j = 1}^m$
+
+- the covariance matrix$\mathbf{R}$
 
 ## 2. Fit the null model to the real data.
 
-Recall that the power of the copula is that it allows us to consider the marginal distributions separately from the covariance structure. Therefore, we can proceed as follows.
+### Independently estimate the marginals
 
 For each gene $j$, estimate $\{\mu_j, \sigma_j\}$ using maximum likelihood. These are the marginal distributions.
 
-## 2. (cont.)
+Separately, use the Gaussian copula to model the dependence structure.
+
+## 2. (cont.) `rmvnb()` using the Gaussian copula
+
+## Estimate the covariance structure
 
 Separately, use the Gaussian copula to model the dependence structure.
 
 - Transform the raw data (counts) to the CDF values of the counts. 
 - Transform the discrete CDF values into continuous $U(0, 1)$ variables: $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$.
 - Transform the CDF values to standard Gaussian random variables: compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
-- Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute $\mathbf{\hat{R}}$.
+- Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute the sample correlation $\mathbf{\hat{R}}$.
 
 ## 3. Sample from the fitted null model.
 
@@ -130,9 +282,9 @@ Separately, use the Gaussian copula to model the dependence structure.
 
 $$
 \begin{bmatrix} 
-    \tilde{Z}_{11} & \dots & \tilde{Z}_{1m} \\
+    \tilde{X}_{11} & \dots & \tilde{X}_{1m} \\
     \vdots & \ddots & \\
-    \tilde{Z}_{n1} &        & \tilde{Z}_{nm}
+    \tilde{X}_{n1} &        & \tilde{X}_{nm}
 \end{bmatrix}
 $$
 
@@ -140,54 +292,40 @@ $$
 
 $$
 \begin{bmatrix} 
-    \hat{F}_1^{-1}(\Phi(\tilde{Z}_{11})) & \dots & \hat{F}_m^{-1}(\Phi(\tilde{Z}_{1m})) \\
+    \hat{F}_1^{-1}(\Phi(\tilde{X}_{11})) & \dots & \hat{F}_m^{-1}(\Phi(\tilde{X}_{1m})) \\
     \vdots & \ddots & \\
-    \hat{F}_1^{-1}(\Phi(\tilde{Z}_{n1})) &        & \hat{F}_m^{-1}(\Phi(\tilde{Z}_{nm}))
+    \hat{F}_1^{-1}(\Phi(\tilde{X}_{n1})) &        & \hat{F}_m^{-1}(\Phi(\tilde{X}_{nm}))
+\end{bmatrix} = 
+\begin{bmatrix} 
+    \tilde{Y}_{11} & \dots & \tilde{Y}_{1m} \\
+    \vdots & \ddots & \\
+    \tilde{Y}_{n1} &        & \tilde{Y}_{nm}
 \end{bmatrix}
 $$
 
+## Summary of null generation
+
+![Null generation steps.](figures/ClusterDE_supp_null_generation.png)
+
 ## 2. Clustering
 
-ClusterDE allows any clustering algorithm. Note that it only handles the case of two clusters, so if you started out with more clusters, you should identify a particular pair of interest. In the **Practical guidelines for ClusterDE usage** subsection, steps 1 and 2 describe how an analyst should proceed.
-
-1. Given $\geq 2$ clusters, identify 2 clusters of interest. Generally, this will be a pair for which you suspect the clustering is spurious (i.e. you think the two clusters actually come from the same cell type, so they are strong candidates to be merged into a single cluster).
-
-2. Filter the data so that you only consider the subset of cells that come from those two clusters.
-
-## Clustering algorithms
-
-#### UMAP
-
-UMAP is common in scRNA-seq analysis.
-
-TODO: summarize UMAP.
-
-#### Louvain
-
-The example analyses in the presentation use the default Seurat clustering procedure, which uses the Louvain algorithm.
-
-TODO: describe the Seurat clustering pipeline.
-
-TODO: summarize the Louvain algorithm.
+![Clustering step](figures/ClusterDE_illustration-step_2.png)
 
 ## 3. DE analysis (testing)
 
-ClusterDE allows any DE test.
-
-TODO: choose and summarize a common DE test(s), e.g. Wilcoxon, since it performs well when analyzing a homogeneous sample.
-
-Let $P_1, ..., P_m$ be the p-values computed by the $m$ DE tests on the target data. 
-Define the target DE score $S_j := -\log_{10}P_j$. Likewise for the synthetic null data.
-
-The final outputs of step 3: $m$ target DE scores $S_1, ..., S_m$; $m$ null DE scores $\tilde{S}_1, ..., \tilde{S}_m$.
+![Hypothesis testing step](figures/ClusterDE_illustration-step_3.png)
 
 ## 4. FDR control
+
+TODO: explain what Clipper is.
+
+TODO: add a reminder of the FDR problem.
 
 Given the target and null DE scores, compute a contrast score for gene $j$ as $C_j := S_j - \tilde{S}_j$.
 
 ![FDR control.](figures/ClusterDE_illustration-fdr_control.png)
 
-Our contrast score cutoff is:
+## Contrast score cutoff
 
 $$
 t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:C_j \geq t\} \lor 1} \leq q\right\}
@@ -195,32 +333,114 @@ $$
 
 ## Results
 
-TODO: choose and describe example analyses from the paper.
+- Simulations
+
+  - 
+  
+  - 
+
+- Real data
+
+  - homogeneous cell line (e.g. H2228): no DE genes
+  
+  - different cell types: biologically meaningful DE genes
+
+## Results: homogeneous cell line
+
+H2228: "the gold standard for benchmarking the accuracy of clustering."
+
+![One true cluster](figures/cellline_vignette-bad_clusters.png)
+
+## Results: 0 DE genes
+
+![Successfully identified no DE genes](figures/cellline_vignette-0_DE_genes.png)
+
+## Results: PBMC dataset
+
+![Choose 2 from this large set](figures/pbmc_vignette-many_clusters.png)
+
+## Results: PBMC dataset
+
+![Chose 2 that we know are similar](figures/pbmc_vignette-2_clusters.png)
+
+## Results: default Seurat clustering
+
+![some top DE genes have similar expression levels](figures/pbmc_vignette-seurat_top_DE.png)
+
+## Results: ClusterDE
+
+![identified more biologically meaningful DE genes](figures/pbmc_vignette-ClusterDE_top_DE.png)
+
+## Modifications to the method
 
 ## Alternative strategies for synthetic null generation
 
-Generating the synthetic null dataset as described earlier preserves more of the original structure of the data, compared to using knockoffs or permuting the genes.
+- Knockoffs
 
-![Comparison of synthetic null generation strategies.](figures/S7.png)
+  - Change setting to prediction of cell cluster label
+  
+  - Generate features that are uncorrelated with the response
+
+- Permutation:
+
+  - Independently 
+  
+## Performance of alternative strategies
+
+![Power and FDR comparisons](figures/S8.png)
+
+## Conclusion
+
+#### Context
+
+What is differential expression?
+
+#### Motivation
+
+What are the problems with existing methods?
+
+#### Method
+
+How does ClusterDE solve these problems?
+
+#### Benchmark results
+
+Does ClusterDE really solve these problems?
+
+#### Alternatives and extensions
+
+What are other variations on ClusterDE that we might consider?
 
 ## Appendix
 
-## Biology
+## Comparing preservation of properties between RNG strategies
 
-TODO: decide which of the following biology background is necessary to include in the presentation.
+![Comparison of synthetic null generation strategies.](figures/S7.png)
 
-### RNA
 
-RNA carries the genetic information specific in DNA. There are two main types of RNA.
+#### Context: what is differential expression?
 
-**Non-coding RNA** performs some biological function.
+Discovering DE genes helps us generate cell-type markers, which identify the cell types in our sample.
 
-**Messenger RNA** forms a template for protein production (it codes for a protein which performs some biological function).
+#### Motivation: what are the problems with naive methods? 
 
-TODO: explain the jump from RNA to the UMI count matrix.
+Naive discovery methods (e.g. Seurat) double-dip: they cluster the data, then perform hypothesis tests using those clusters. This opens up an increased risk of false discoveries.
 
-TODO: define UMI.
+#### Method: how does ClusterDE work?
 
-### scRNA-seq
+1. Generate synthetic null data from a single cell type.
+2. For both datasets, perform clustering.
+3. For both datasets, perform hypothesis tests.
+4. Compute a contrast score between the two datasets, and find a cutoff that controls the FDR (Clipper).
 
-TODO: give an explanation of scRNA-seq data collection and analysis.
+#### Benchmark results: does ClusterDE really solve these problems?
+
+ClusterDE outperforms other methods when
+- there is only one cell type, by identifying few DE genes 
+- there are distinct cell types, by identifying more meaningful DE genes
+
+#### Alternatives and extensions: what are other variations on ClusterDE that we might consider?
+
+The copula generation strategy outperforms other alternatives in terms of FDR and power.
+
+
