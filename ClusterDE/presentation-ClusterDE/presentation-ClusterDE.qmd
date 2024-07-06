@@ -90,34 +90,26 @@ In other words: we **forced** the genes to exhibit different distributions in th
 
 When our clusters are bad, we open ourselves up to false discoveries.
 
-## Double-dipping theory
-
-We only consider two cell types, so $Z \in \{0, 1\}$
-
-We want to test
-
-$$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
-
-But we can only test
-$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$
-
-## The relationship between double-dipping and FDR 
-
-False discoveries occur when this does NOT hold
-
-$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$ , but this holds $$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
-
-In words: we made the right decision, but we set up the wrong test.
-
-## FDR
+## FDR: notation
 
 We test in order to **discover** differentially expressed genes.
 
-**False discoveries** are genes that are not 
+**False discoveries** are genes that are truly similar between cell types. 
+
+![](figures/islr-table.png)
+
+
+## FDR definition
 
 $$
-\text{FDR} := \# 
+\text{FDR} := E[\frac{V}{R}]
 $$
+
+$$
+\text{FDR} := E[\frac{\text{number of false rejections}}{\text{total number of rejections}}]
+$$
+
+Problem: reliance on clustering quality inflates the FDR.
 
 # How do we solve this problem?
 
@@ -320,13 +312,11 @@ $$
 t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:C_j \geq t\} \lor 1} \leq q\right\}
 $$
 
+## Intuition for the cutoff
+
+![](figures/clipper_cutoff.jpg)
+
 ## Results
-
-- Simulations
-
-  - 
-  
-  - 
 
 - Real data
 
@@ -350,7 +340,7 @@ $$
 
 ![identified more biologically meaningful DE genes](figures/pbmc_vignette-ClusterDE_top_DE.png)
 
-## Modifications to the method
+
 
 ## Alternative strategies for synthetic null generation
 
@@ -443,3 +433,25 @@ Separately, use the Gaussian copula to model the dependence structure.
 - Transform the CDF values to standard Gaussian random variables: compute $\Phi^{-1}(U_{ij})$ for each $j = 1, .., m$.
 - Fit a $m$-dimensional multivariate Gaussian distribution to this data to compute the sample correlation $\mathbf{\hat{R}}$.
 
+## Double-dipping theory
+
+We only consider two cell types, so $Z \in \{0, 1\}$
+
+We want to test
+
+$$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
+
+But we can only test
+$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$
+
+## The relationship between double-dipping and FDR 
+
+False discoveries occur when this does NOT hold
+
+$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$ , but this holds $$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
+
+In words: we made the right decision, but we set up the wrong test.
+
+## Avoids false discoveries
+
+![](figures/S11.png)
