@@ -235,18 +235,16 @@
   }
 }
 #show: doc => article(
-  title: [ClusterDE Seminar Paper],
+  title: [ClusterDE: a post-clustering differential expression method],
   authors: (
     ( name: [Carson Zhang],
-      affiliation: [],
-      email: [] ),
+      affiliation: [LMU Munich],
+      email: [carson.zhang\@campus.lmu.de] ),
     ),
   abstract: [In typical differential expression analysis, a clustering algorithm is applied to scRNA-seq data, and then a differential expression test is conducted in order to identify genes that are differentially expressed between the clusters. However, this procedure constitutes "double dipping", as it first clusters the data to identify cell types, and then uses those same clusters to identify cell-type marker genes. This leads to an inflated FDR for DE genes. Song et al.~\(2023) propose ClusterDE, a post-clustering DE method that controls the FDR of DE genes. ClusterDE generates a synthetic null dataset that preserves the structure of the real data, computes differences between this null dataset and the real data, then performs FDR control on the results. Simulations and real data analysis demonstrate that ClusterDE controls the FDR and identifies cell-type marker genes as top DE genes, successfully distinguishing them from housekeeping genes.
 
 ],
-  font: ("Arial",),
   fontsize: 11pt,
-  sectionnumbering: "1.1.a",
   toc: true,
   toc_title: [Table of contents],
   toc_depth: 3,
@@ -257,125 +255,38 @@
 
 = Introduction
 <introduction>
-== Background
-<background>
-=== Biology
-<biology>
-TODO: give the basic biology background necessary to understand the paper.
+Scientific writing is a crucial part of the research process, allowing researchers to share their findings with the wider scientific community. However, the process of typesetting scientific documents can often be a frustrating and time-consuming affair, particularly when using outdated tools such as LaTeX. Despite being over 30 years old, it remains a popular choice for scientific writing due to its power and flexibility. However, it also comes with a steep learning curve, complex syntax, and long compile times, leading to frustration and despair for many researchers. #cite(<netwok2020>)
 
-==== RNA
-<rna>
-RNA carries the genetic information specific in DNA. There are two main types: - #strong[non-coding RNA] performs some biological function - #strong[messenger RNA] forms a template for protein production \(it codes for a protein which performs some biological function).
+== Paper overview
+<paper-overview>
+In this paper we introduce Typst, a new typesetting system designed to streamline the scientific writing process and provide researchers with a fast, efficient, and easy-to-use alternative to existing systems. Our goal is to shake up the status quo and offer researchers a better way to approach scientific writing.
 
-TODO: explain the jump from RNA to the UMI count matrix.
+By leveraging advanced algorithms and a user-friendly interface, Typst offers several advantages over existing typesetting systems, including faster document creation, simplified syntax, and increased ease-of-use.
 
-TODO: define UMI.
+To demonstrate the potential of Typst, we conducted a series of experiments comparing it to other popular typesetting systems, including LaTeX. Our findings suggest that Typst offers several benefits for scientific writing, particularly for novice users who may struggle with the complexities of LaTeX. Additionally, we demonstrate that Typst offers advanced features for experienced users, allowing for greater customization and flexibility in document creation.
 
-=== scRNA-seq
-<scrna-seq>
-TODO: give an explanation of scRNA-seq data collection and analysis.
+Overall, we believe that Typst represents a significant step forward in the field of scientific writing and typesetting, providing researchers with a valuable tool to streamline their workflow and focus on what really matters: their research. In the following sections, we will introduce Typst in more detail and provide evidence for its superiority over other typesetting systems in a variety of scenarios.
 
-=== Double-dipping
-<double-dipping>
-TODO: explain the double-dipping problem in differential expression analysis.
+= Overview of differential expression methods
+<overview-of-differential-expression-methods>
+== ClusterDE
+<clusterde>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum dapibus dictum leo, vel molestie felis hendrerit at. In diam nisl, rhoncus dapibus facilisis at, laoreet ac nunc. Sed vehicula metus id faucibus tempus. Etiam at laoreet orci, mattis efficitur sem. Aenean eu malesuada nisl. Mauris tempor pulvinar magna, eu tempus felis aliquet nec. In nec iaculis nisi. Fusce at arcu enim. In ipsum massa, pretium vitae pharetra in, vulputate vel felis.
 
-= Method
-<method>
-In words, the ClusterDE method can be broken up into four steps:
+$a + b = g a m m a$
 
-+ Generate a synthetic null dataset that mimics the structure \(in particular, the gene-gene correlation structure) of the original data.
+Mauris egestas laoreet aliquam. Integer non convallis risus. Ut eu felis ut augue ultricies tempus. Integer posuere lacinia ex, ac sollicitudin tortor tempus id. Morbi dictum elit at orci accumsan, vitae volutpat dui scelerisque. Pellentesque vitae lectus id nisl posuere placerat pharetra nec ligula. Donec laoreet ligula hendrerit velit tempus porttitor. Vivamus eleifend imperdiet magna quis pellentesque. Pellentesque blandit congue nisi ac ultricies. Sed velit ante, pretium nec facilisis ac, ultricies vitae orci. In hac habitasse platea dictumst. Phasellus massa mauris, tincidunt sed facilisis eu, venenatis a leo.
 
-+ Separately partition the synthetic null data and the target data \(real data) into two clusters.
+Fusce id risus mauris. Morbi tincidunt interdum odio, a laoreet sem pulvinar condimentum. Integer suscipit lobortis quam vitae hendrerit. Duis nec convallis mi. Etiam cursus felis eget sem tincidunt, at vulputate urna mattis. Aenean nec libero condimentum, posuere tellus eget, ultrices dui. In quis magna ac metus facilisis porta. Integer et massa dignissim, tempus massa quis, feugiat ante. Aliquam a tortor ligula. Praesent aliquam, lorem id ullamcorper rutrum, nunc orci posuere nulla, id fermentum mi erat a justo. Sed ut sapien vulputate, elementum ante ac, maximus lorem. Phasellus metus est, ultricies et ipsum ac, volutpat lobortis turpis. Vestibulum accumsan elementum vehicula.
 
-+ Separately for the null and target data, perform hypothesis tests for differentially expressed genes between the two clusters. For each gene, compute some sort of difference between the scores on the two datasets.
-
-+ Output a subset of the significant results from step 3 as potential cell-type marker genes.
-
-#figure([
-#box(width: 1304.9096989966556pt, image("ClusterDE_illustration.png"))
-], caption: figure.caption(
-position: bottom, 
-[
-An graphical illustration of ClusterDE.
-]), 
-kind: "quarto-float-fig", 
-supplement: "Figure", 
-)
+== Other differential expression methods
+<other-differential-expression-methods>
+= Data analysis
+<data-analysis>
+= Simulation study
+<simulation-study>
 
 
-It is important to note that ClusterDE "does not provide an automatic decision about whether two clusters should be merged". Its outputs are potential DE genes, and therefore it does not directly measure the quality of a given clustering. These potential cell-type marker genes enable researchers to gain biological insights into the clusters, and they empower researchers to further explore the functional and molecular characteristics of the clusters.
 
-== Synthetic null generation
-<synthetic-null-generation>
-The synthetic null generation consists of three steps, as described in the following figure.
-
-#figure([
-#box(width: 1254.3411371237457pt, image("ClusterDE_supp_null_generation.png"))
-], caption: figure.caption(
-position: bottom, 
-[
-Null generation steps.
-]), 
-kind: "quarto-float-fig", 
-supplement: "Figure", 
-)
-
-
-+ Model the null distribution in terms of the Gaussian copula.
-
-Now, our goal is to estimate the parameters $mu_j , sigma_j_(j = 1)^m$ and $bold(R)$.
-
-#block[
-#set enum(numbering: "1.", start: 2)
-+ Fit the null model to the real data.
-
-+ Sample from the fitted null model.
-]
-
-== 2. Clustering
-<clustering>
-ClusterDE allows any clustering algorithm. Note that it only handles the case of two clusters, so if you started out with more clusters, you should identify a particular pair of interest. In the #strong[Practical guidelines for ClusterDE usage] subsection, steps 1 and 2 describe how an analyst should proceed.
-
-+ Given $gt.eq 2$ clusters, identify 2 clusters of interest. Generally, this will be a pair for which you suspect the clustering is spurious \(i.e.~you think the two clusters actually come from the same cell type, so they are strong candidates to be merged into a single cluster).
-
-+ Filter the data so that you only consider the subset of cells that come from those two clusters.
-
-TODO: describe the Seurat clustering pipeline.
-
-=== UMAP
-<umap>
-UMAP is common.
-
-TODO: summarize UMAP.
-
-=== Louvain
-<louvain>
-The example analyses in the presentation use the default Seurat clustering procedure, which uses the Louvain algorithm.
-
-TODO: summarize the Louvain algorithm.
-
-== 3. DE analysis \(testing)
-<de-analysis-testing>
-ClusterDE allows any DE test.
-
-TODO: choose and summarize common DE tests.
-
-Let $P_1 , . . . , P_m$ be the p-values computed by the $m$ DE tests on the target data. Define the target DE score $S_j := - log_10 P_j$. Likewise for the synthetic null data.
-
-The final outputs of step 3: $m$ target DE scores $S_1 , . . . , S_m$; $m$ null DE scores $tilde(S)_1 , . . . , tilde(S)_m$.
-
-== 4. FDR control
-<fdr-control>
-Given the target and null DE scores, compute a contrast score for gene $j$ as $C_j := S_j - tilde(S)_j$.
-
-= Results
-<results>
-== Simulation
-<simulation>
-== Real data example
-<real-data-example>
-= Appendix
-<appendix>
-
-
+#bibliography("refs.bib")
 
