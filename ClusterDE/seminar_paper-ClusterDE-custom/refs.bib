@@ -1,7 +1,12 @@
-@article{song2023,
-  title={ClusterDE: a post-clustering differential expression (DE) method robust to false-positive inflation caused by double diping},
-  author={Song, Dongyuan and Li, Kexin and Ge, Xinzhou and Li, Jingyi Jessica},
-  journal={bioRxiv},
-  year=2023,
-  publisher={Automatic Publishing Inc.}
+@article {Song2023,
+	author = {Song, Dongyuan and Li, Kexin and Ge, Xinzhou and Li, Jingyi Jessica},
+	title = {ClusterDE: a post-clustering differential expression (DE) method robust to false-positive inflation caused by double dipping},
+	elocation-id = {2023.07.21.550107},
+	year = {2023},
+	doi = {10.1101/2023.07.21.550107},
+	publisher = {Cold Spring Harbor Laboratory},
+	abstract = {In typical single-cell RNA-seq (scRNA-seq) data analysis, a clustering algorithm is applied to find putative cell types as clusters, and then a statistical differential expression (DE) test is used to identify the differentially expressed (DE) genes between the cell clusters. However, this common procedure uses the same data twice, an issue known as {\textquotedblleft}double dipping{\textquotedblright}: the same data is used to define both cell clusters and DE genes, leading to false-positive DE genes even when the cell clusters are spurious. To overcome this challenge, we propose ClusterDE, a post-clustering DE test for controlling the false discovery rate (FDR) of identified DE genes regardless of clustering quality. The core idea of ClusterDE is to generate real-data-based synthetic null data with only one cluster, as a counterfactual in contrast to the real data, for evaluating the whole procedure of clustering followed by a DE test. Using comprehensive simulation and real data analysis, we show that ClusterDE has not only solid FDR control but also the ability to find cell-type marker genes that are biologically meaningful. ClusterDE is fast, transparent, and adaptive to a wide range of clustering algorithms and DE tests. Besides scRNA-seq data, ClusterDE is generally applicable to post-clustering DE analysis, including single-cell multi-omics data analysis.Competing Interest StatementThe authors have declared no competing interest.},
+	URL = {https://www.biorxiv.org/content/early/2023/07/25/2023.07.21.550107},
+	eprint = {https://www.biorxiv.org/content/early/2023/07/25/2023.07.21.550107.full.pdf},
+	journal = {bioRxiv}
 }

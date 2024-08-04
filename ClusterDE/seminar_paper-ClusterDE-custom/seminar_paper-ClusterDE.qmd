@@ -5,7 +5,6 @@ author:
     email: "carson.zhang@campus.lmu.de"
     affiliations:
       - name: LMU Munich
-        department: Statistics
         city: Munich
         country: Germany
 abstract: |
@@ -15,7 +14,7 @@ abstract: |
   However, this procedure constitutes "double dipping", as it first clusters
   the data to identify cell types, and then uses those same clusters to identify 
   cell-type marker genes. This leads to an inflated FDR for DE genes. 
-  Song et al. (2023) propose ClusterDE, a post-clustering DE method that 
+  @Song2023 propose ClusterDE, a post-clustering DE method that 
   controls the FDR of DE genes. ClusterDE generates a synthetic null dataset
   that preserves the structure of the real data, 
   computes differences between this null dataset and the real data, then performs 
@@ -32,10 +31,10 @@ format:
     toc: true
     columns: 1
     # mainfont: arial
-    mainfont: garamond
     fontsize: 11pt
     keep-typ: true
 bibliography: refs.bib
+bibliographystyle: "apa"
 ---
 
 ## Introduction
