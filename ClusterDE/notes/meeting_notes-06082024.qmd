@@ -1,0 +1,71 @@
+---
+title: "Outline of seminar paper"
+---
+
+## Introduction
+
+Motivation for scRNA-seq data analysis and cell type annotation.
+
+Description of the cell type annotation process.
+
+Description of the double dipping issue.
+
+### Paper overview
+
+## Overview of differential expression methods
+
+Naive double-dipping
+
+TN test
+
+Count splitting
+
+Multiple testing corrections
+
+### ClusterDE
+
+The ClusterDE method consists of four basic steps.
+
+1. Generate a synthetic null dataset that consists of a single cluster but otherwise mimics the real data.
+
+2. Perform clustering on both datasets.
+
+3. Perform differential expression testing on both datasets.
+
+4. Combine the results to determine which genes to output as discoveries (DE genes).
+
+### Other differential expression methods
+
+## Ideas
+
+Take a real dataset, generate a synthetic null, compare using several condition, such as
+
+- covariance structure of each dataset
+- compare count distributions (marginal distributions)
+- * sequencing depth
+
+## Another idea
+
+- Oleg provides a dataset nad code
+
+- Oleg sends the graphical LASSO
+
+- Generate a null dataset
+
+  - Compare e.g. sparsity of real and synthetic data
+  
+  - Compare the estimation of inerse covariance vs using the empirical covariance for the copula
+  
+GGLasso:
+
+- SGL problems are the only focus
+
+- Main examples: easy one, soil microbiome networks (set latent = False)
+
+## Data analysis
+
+## Simulation study
+
+## Software
+
+## Appendix
