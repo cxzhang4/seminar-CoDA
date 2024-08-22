@@ -64,16 +64,19 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Biologists like to identify the cell types in their scRNA-seq samples.</p>
-<p>To identify these cell types, they identify a set of cell-type marker genes.</p>
-<p>To identify these cell-type marker genes, they perform differential expression testing.</p>
-<p>Naive differential expression testing is susceptible to false discoveries caused by double-dipping.</p>
+<p>Motivation for scRNA-seq data analysis and cell type annotation.</p>
+<p>Description of the cell type annotation process.</p>
+<p>Description of the double dipping issue.</p>
 <section id="paper-overview" class="level3">
 <h3 class="anchored" data-anchor-id="paper-overview">Paper overview</h3>
 </section>
 </section>
 <section id="overview-of-differential-expression-methods" class="level2">
 <h2 class="anchored" data-anchor-id="overview-of-differential-expression-methods">Overview of differential expression methods</h2>
+<p>Naive double-dipping</p>
+<p>TN test</p>
+<p>Count splitting</p>
+<p>Multiple testing corrections</p>
 <section id="clusterde" class="level3">
 <h3 class="anchored" data-anchor-id="clusterde">ClusterDE</h3>
 <p>The ClusterDE method consists of four basic steps.</p>
@@ -88,11 +91,42 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="other-differential-expression-methods">Other differential expression methods</h3>
 </section>
 </section>
+<section id="ideas" class="level2">
+<h2 class="anchored" data-anchor-id="ideas">Ideas</h2>
+<p>Take a real dataset, generate a synthetic null, compare using several condition, such as</p>
+<ul>
+<li>covariance structure of each dataset</li>
+<li>compare count distributions (marginal distributions)</li>
+<li><ul>
+<li>sequencing depth</li>
+</ul></li>
+</ul>
+</section>
+<section id="another-idea" class="level2">
+<h2 class="anchored" data-anchor-id="another-idea">Another idea</h2>
+<ul>
+<li><p>Oleg provides a dataset nad code</p></li>
+<li><p>Oleg sends the graphical LASSO</p></li>
+<li><p>Generate a null dataset</p>
+<ul>
+<li><p>Compare e.g.&nbsp;sparsity of real and synthetic data</p></li>
+<li><p>Compare the estimation of inverse covariance vs using the empirical covariance for the copula</p></li>
+</ul></li>
+</ul>
+<p>GGLasso:</p>
+<ul>
+<li><p>SGL problems are the only focus</p></li>
+<li><p>Main examples: easy one, soil microbiome networks (set latent = False)</p></li>
+</ul>
+</section>
 <section id="data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="data-analysis">Data analysis</h2>
 </section>
 <section id="simulation-study" class="level2">
 <h2 class="anchored" data-anchor-id="simulation-study">Simulation study</h2>
+</section>
+<section id="software" class="level2">
+<h2 class="anchored" data-anchor-id="software">Software</h2>
 </section>
 <section id="appendix" class="level2">
 <h2 class="anchored" data-anchor-id="appendix">Appendix</h2>

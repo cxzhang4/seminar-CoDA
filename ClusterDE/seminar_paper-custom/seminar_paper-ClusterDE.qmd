@@ -67,6 +67,14 @@ The ClusterDE method consists of four basic steps.
 
 ## Data analysis
 
+### BacSC data
+
+### Synthetic null data generation
+
+### Schäffer-Strimmer
+
+### Results
+
 ## Simulation study
 
 ## Appendix

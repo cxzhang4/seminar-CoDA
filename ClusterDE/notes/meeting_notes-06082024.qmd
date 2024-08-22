@@ -54,7 +54,7 @@ Take a real dataset, generate a synthetic null, compare using several condition,
 
   - Compare e.g. sparsity of real and synthetic data
   
-  - Compare the estimation of inerse covariance vs using the empirical covariance for the copula
+  - Compare the estimation of inverse covariance vs using the empirical covariance for the copula
   
 GGLasso:
 
