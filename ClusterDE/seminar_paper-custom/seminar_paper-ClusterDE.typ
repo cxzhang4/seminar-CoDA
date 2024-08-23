@@ -283,8 +283,24 @@ The ClusterDE method consists of four basic steps.
 <other-differential-expression-methods>
 = Data analysis
 <data-analysis>
+== BacSC data
+<bacsc-data>
+== Synthetic null data generation
+<synthetic-null-data-generation>
+== Schäfer-Strimmer
+<schäfer-strimmer>
+== Results
+<results>
 = Simulation study
 <simulation-study>
+#cite(<Song2023>)
+
+#cite(<Ostner2024>)
+
+#cite(<Badri2020>)
+
+#cite(<SchaeferStrimmer2005>)
+
 = Appendix
 <appendix>
 

@@ -71,11 +71,19 @@ The ClusterDE method consists of four basic steps.
 
 ### Synthetic null data generation
 
-### Schäffer-Strimmer
+### Schäfer-Strimmer
 
 ### Results
 
 ## Simulation study
+
+@Song2023
+
+@Ostner2024
+
+@Badri2020
+
+@SchaeferStrimmer2005
 
 ## Appendix
 

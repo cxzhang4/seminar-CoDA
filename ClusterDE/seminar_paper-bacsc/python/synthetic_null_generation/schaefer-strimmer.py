@@ -49,5 +49,30 @@ data_null_gen, R_est = cd.generate_nb_data_copula(data_gene, rng_seed=5678, nb_f
                                                   corr_factor=cf, R_est=R_est_noscale, check_pd=False, min_nonzero=2,
                                                   R_metric="corr")
 
+sc.pp.calculate_qc_metrics(data_null_gen)
+data_null_gen.var["var_counts"] = np.asarray(np.var(data_null_gen.X, axis=0)).squeeze()
+data_null_gen.var["mean_counts"] = np.asarray(np.mean(data_null_gen.X, axis=0)).squeeze()
+
+nb.estimate_overdisp_nb(data_null_gen, flavor="sctransform", seed=1234)
+data_null_gen.layers["counts"] = data_null_gen.X.copy()
+
+k_opt = data_gene.uns["BacSC_params"]["k_opt"]
+n_neighbors_opt = data_gene.uns["BacSC_params"]["n_neighbors_opt"]
+min_dist_opt = data_gene.uns["BacSC_params"]["min_dist_opt"]
+res_opt = data_gene.uns["BacSC_params"]["res_opt"]
+
+sc.pp.calculate_qc_metrics(data_null_gen, var_type="genes", percent_top=None, log1p=True, inplace=True)
+sc.pp.normalize_total(data_null_gen, target_sum=None, layer=None)
+data_null_gen.X = sps.csr_matrix(np.log(data_null_gen.X + np.array(data_null_gen.var["nb_overdisp"] / 4)))
+data_null_gen.layers["vst_counts"] = data_null_gen.X.copy()
+sc.pp.scale(data_null_gen, max_value=10, zero_center=True)
+data_null_gen.X[np.isnan(data_null_gen.X)] = 0
+sc.tl.pca(data_null_gen, svd_solver='arpack')
+sc.pp.neighbors(data_null_gen, n_neighbors=n_neighbors_opt, n_pcs=k_opt)
+sc.tl.umap(data_null_gen, neighbors_key="neighbors", min_dist=min_dist_opt, spread=1)
+
+sc.pl.umap(data_null_gen, color="total_counts", alpha=1, cmap="viridis", title="Null data")
+plt.show()
+
 synthetic_data_file_name = "synthetic-schaefer_strimmer-" + data_file_name
 data_null_gen.write(synthetic_data_file_name)
