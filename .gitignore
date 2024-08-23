@@ -1,3 +1,5 @@
 data/
 .Rhistory
 .DS_Store
+
+*.h5ad

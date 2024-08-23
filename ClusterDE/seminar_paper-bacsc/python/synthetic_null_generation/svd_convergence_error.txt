@@ -1,0 +1,107 @@
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: invalid value encountered in scalar multiply
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: invalid value encountered in scalar multiply
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: invalid value encountered in scalar multiply
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:24: RuntimeWarning: invalid value encountered in scalar divide
+  p = mu / var
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: invalid value encountered in scalar subtract
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: divide by zero encountered in scalar divide
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:23: RuntimeWarning: invalid value encountered in scalar multiply
+  var = mu + (1 / theta) * mu ** 2
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/utils.py:25: RuntimeWarning: divide by zero encountered in scalar divide
+  n = mu ** 2 / (var - mu)
+Traceback (most recent call last):
+  File "/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/empirical_covar.py", line 24, in <module>
+    Bsub_minmed_PB_df_synthetic = dg.generate(Bsub_minmed_PB_df)
+  File "/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/generator.py", line 264, in generate
+    generated_data = self.generate_data(X, self.marginal, self.seed)
+  File "/Users/carsonzhang/lmu_munich/master_stads/ss_24/seminar-CoDA/ClusterDE/seminar_paper-bacsc/python/synthetic_null_generation/prodg2/source/generator.py", line 242, in generate_data
+    Z = rng.multivariate_normal(mean=np.zeros(p), cov=sigma, size=N)
+  File "numpy/random/_generator.pyx", line 3798, in numpy.random._generator.Generator.multivariate_normal
+  File "/Users/carsonzhang/miniforge3/envs/BacSC-ProDG/lib/python3.9/site-packages/numpy/linalg/linalg.py", line 1681, in svd
+    u, s, vh = gufunc(a, signature=signature, extobj=extobj)
+  File "/Users/carsonzhang/miniforge3/envs/BacSC-ProDG/lib/python3.9/site-packages/numpy/linalg/linalg.py", line 121, in _raise_linalgerror_svd_nonconvergence
+    raise LinAlgError("SVD did not converge")
+numpy.linalg.LinAlgError: SVD did not converge
