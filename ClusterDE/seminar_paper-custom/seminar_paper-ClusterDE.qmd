@@ -65,6 +65,28 @@ The ClusterDE method consists of four basic steps.
 
 ### Other differential expression methods
 
+- Count splitting
+
+(see presentations)
+
+(define validity)
+
+```{r}
+library(flextable)
+library(readr)
+```
+
+
+```{r}
+table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
+flextable(table_e1)
+
+table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic.csv")
+
+flextable(table_e1_synthetic)
+```
+
+
 ## Data analysis
 
 ### BacSC data
@@ -77,13 +99,8 @@ The ClusterDE method consists of four basic steps.
 
 ## Simulation study
 
-@Song2023
+@HeumosSchaarLance2023
 
-@Ostner2024
-
-@Badri2020
-
-@SchaeferStrimmer2005
 
 ## Appendix
 

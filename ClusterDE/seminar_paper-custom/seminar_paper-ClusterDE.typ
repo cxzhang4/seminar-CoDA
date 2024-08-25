@@ -281,6 +281,69 @@ The ClusterDE method consists of four basic steps.
 
 == Other differential expression methods
 <other-differential-expression-methods>
+- Count splitting
+
+\(see presentations)
+
+\(define validity)
+
+#block[
+```r
+library(flextable)
+library(readr)
+```
+
+]
+#block[
+```r
+table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
+```
+
+#block[
+```
+Rows: 13 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (9): Cells, Genes, Minimum seq. depth, Maximum seq. depth, Median seq. d...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+]
+```r
+flextable(table_e1)
+```
+
+#block[
+#box(width: 514.8542713567839pt, image("seminar_paper-ClusterDE_files/figure-typst/unnamed-chunk-2-1.png"))
+
+]
+```r
+table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic.csv")
+```
+
+#block[
+```
+Rows: 3 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (9): Cells, Genes, Minimum seq. depth, Maximum seq. depth, Median seq. d...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+]
+```r
+flextable(table_e1_synthetic)
+```
+
+#block[
+#box(width: 514.8542713567839pt, image("seminar_paper-ClusterDE_files/figure-typst/unnamed-chunk-2-2.png"))
+
+]
+]
 = Data analysis
 <data-analysis>
 == BacSC data
@@ -293,13 +356,7 @@ The ClusterDE method consists of four basic steps.
 <results>
 = Simulation study
 <simulation-study>
-#cite(<Song2023>)
-
-#cite(<Ostner2024>)
-
-#cite(<Badri2020>)
-
-#cite(<SchaeferStrimmer2005>)
+#cite(<HeumosSchaarLance2023>)
 
 = Appendix
 <appendix>
