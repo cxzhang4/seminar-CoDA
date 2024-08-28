@@ -38,8 +38,8 @@ dataset_paths = [
     # "../../data/probe_Bac_scRNAseq_Rosenthal/B subtilis minimal media/synthetic-empirical_corr-filtered_data_maxpool_processed.h5ad",
     # "../../data/probe_Bac_scRNAseq_Rosenthal/B subtilis minimal media/synthetic-schaefer_strimmer-filtered_data_maxpool_processed.h5ad"
     # "../../data/probe_Bac_scRNAseq_Rosenthal/B subtilis minimal media/null_data_opt_tutorial.h5ad"
-    "notebook-synthetic-schaefer_strimmer-filtered_data_maxpool_processed.h5ad",
-    "notebook-synthetic-empirical_corr-filtered_data_maxpool_processed.h5ad"
+    "notebook-synthetic-schaefer_strimmer-filtered_data_maxpool_processed-260824.h5ad",
+    "notebook-synthetic-empirical_corr-filtered_data_maxpool_processed-260824.h5ad"
 ]
 
 dataset_names = [
@@ -69,6 +69,8 @@ summary_stats = {
 summary_df = pd.DataFrame(summary_stats, index=dataset_names)
 summary_df.columns = ["Cells", "Genes", "Minimum seq. depth", "Maximum seq. depth", "Median seq. depth", "Zero counts (percentage)", "Maximum count", "95% quantile", "99% quantile"]
 
-summary_df.to_csv("table_e1-synthetic.csv", index = False)
-with open("table_e1-synthetic-latex.txt", "w") as summary_df_latex:
+summary_df.insert(0, "Dataset", dataset_names)
+
+summary_df.to_csv("table_e1-synthetic_data.csv", index = False)
+with open("table_e1-synthetic_data.txt", "w") as summary_df_latex:
     summary_df_latex.write(summary_df.to_latex())

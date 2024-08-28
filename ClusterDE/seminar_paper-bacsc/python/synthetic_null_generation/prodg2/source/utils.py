@@ -216,7 +216,7 @@ def distribution_transform(X, marginal, rng):
     Perform a distribution transformation on the given data.
 
     This function calculates the cumulative distribution function (CDF) of the data `X` under the given marginal distribution (F), 
-    and the CDF of `X+1` (F1). It then generates a 2D array of random numbers uniformly distributed between 0 and 1 (V), 
+    and the CDF of `X+1` (F1). It then generates a 2D array of random numbers uniformly distributed between 0 and 1 (V),
     and calculates a weighted mixture of `F` and `F1` (U). The weights are the random numbers. This is the actual distribution transformation.
 
     Parameters:

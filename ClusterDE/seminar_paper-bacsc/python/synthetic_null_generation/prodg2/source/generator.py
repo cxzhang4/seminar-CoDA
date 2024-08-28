@@ -188,7 +188,7 @@ class DataGenerator:
 
         This function fits a specified model to each species in the count data. The model can be automatically chosen based on the data, or it can be manually specified as zero-inflated negative binomial ('zinb'), negative binomial ('nb'), or Poisson ('poisson').
         """
-        p, _ = X.shape
+        p, N = X.shape
         result_dict = dict()
 
         if marginal == 'auto':
@@ -242,9 +242,9 @@ class DataGenerator:
         Z = rng.multivariate_normal(mean=np.zeros(p), cov=sigma, size=N)
         Z_cdf = norm.cdf(Z)
 
-        gen_data = uniform_to_marginal(Z_cdf, marginal)
+        gen_data = uniform_to_marginal(Z_cdf.T, marginal)
 
-        return gen_data.T
+        return gen_data
 
     def generate(self, X):
         """

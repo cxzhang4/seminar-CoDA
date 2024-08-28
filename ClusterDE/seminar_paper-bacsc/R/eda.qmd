@@ -1,0 +1,15 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+empirical_corr = read_csv("../python/synthetic_null_generation/empirical-corr.csv")
+ss_corr = read_csv("../python/synthetic_null_generation/ss-corr.csv")
+```
+
+```{r}
+
+```
+
+
+

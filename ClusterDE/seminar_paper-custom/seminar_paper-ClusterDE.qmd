@@ -14,7 +14,7 @@ abstract: |
   However, this procedure constitutes "double dipping", as it first clusters
   the data to identify cell types, and then uses those same clusters to identify 
   cell-type marker genes. This leads to an inflated FDR for DE genes. 
-  @Song2023 propose ClusterDE, a post-clustering DE method that 
+  @ClusterDE propose ClusterDE, a post-clustering DE method that 
   controls the FDR of DE genes. ClusterDE generates a synthetic null dataset
   that preserves the structure of the real data, 
   computes differences between this null dataset and the real data, then performs 
@@ -26,20 +26,41 @@ index-terms:
   - Differential expression
   - Compositional data analysis
 format:
-  # pdf:
-  typst:
+  pdf:
+  # typst:
     toc: true
     columns: 1
-    # mainfont: arial
     fontsize: 11pt
-    keep-typ: true
+    # keep-typ: true
+    link-citations: true
+    # fontfamily: arial
 bibliography: refs.bib
-bibliographystyle: "apa"
+# bibliographystyle: "apa"
 ---
 
 ## Introduction
 
-Biologists like to identify the cell types in their scRNA-seq samples.
+### Cell-type annotation
+
+#### Motivation
+
+Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in the immune response [@GlossaryLymphocyte]. They produce cytokines, which are signaling proteins that activate other parts of the human immune system. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell-type annotation is required in order to obtain this information from e.g. a blood sample.
+
+#### Cell-type markers
+
+#### (TODO: other methods of annotation)
+
+### Differential expression testing
+
+Differential expression testing is the primary method by which scientists identify marker genes. If genes are 
+
+(define validity)
+
+(define FDR)
+
+(mention FDR control like Benjamini-Hochberg)
+
+TODO: mention Scanpy, Seurat, and their default methods
 
 To identify these cell types, they identify a set of cell-type marker genes.
 
@@ -47,45 +68,152 @@ To identify these cell-type marker genes, they perform differential expression t
 
 Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
 
-### Paper overview
+Biologists like to identify the cell types in their scRNA-seq samples.
 
-## Overview of differential expression methods
+To identify these cell types, they identify a set of cell-type marker genes.
 
-### ClusterDE
+To identify these cell-type marker genes, they perform differential expression testing.
+
+Naive differential expression testing is susceptible to false discoveries caused by double-dipping.Biologists like to identify the cell types in their scRNA-seq samples.
+
+To identify these cell types, they identify a set of cell-type marker genes.
+
+To identify these cell-type marker genes, they perform differential expression testing.
+
+Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
+
+## The double-dipping issue
+
+### False discoveries
+
+@ISLR2
+
+## ClusterDE
+
+### Summary of steps
 
 The ClusterDE method consists of four basic steps.
 
 1. Generate a synthetic null dataset that consists of a single cluster but otherwise mimics the real data.
 
-2. Perform clustering on both datasets.
+2. Separately for each dataset, cluster the cells into two groups.
 
-3. Perform differential expression testing on both datasets.
+3. Separately for each dataset, perform differential expression testing between the two groups from step 2.
 
-4. Combine the results to determine which genes to output as discoveries (DE genes).
+4. Combine the results to determine which genes to output as discoveries (DE genes). @RafiGreenland2020
 
-### Other differential expression methods
+TODO: similarity to the S-value.
 
-- Count splitting
+![A visual overview of the ClusterDE method. In step 1, a negative control dataset is generated. In step 2, a clustering algorithm is applied to each dataset. In step 3, a differential expression test is performed for each gene, computing a DE score for each gene in each dataset. In step 4, the difference in results is computed as a contrast score, and Clipper is used to choose a minimum contrast score for the true DE genes outputted by ClusterDE.](figures/ClusterDE_illustration.png){#fig-ClusterDE-illustration}
 
-(see presentations)
+### Step 1
 
-(define validity)
+#### Idea: negative control
+
+#### Idea: copulas
+
+To actually generate this negative control data, [@ClusterDE] use the copula approach. Special methods are required to simulate data from the desired multivariate negative binomial distribution, as statistical packages such as `R` do not come with samplers already implemented. Thus, ClusterDE uses the copula generator implemented in scDesign3 [@scDesign3]  for its *in silico* negative control data.
+
+**Theorem (Probability Integral Transform):** $F_X(X) \sim \text{Uniform}(0, 1)$.
+
+##### Intuition for the PIT
+
+Takeaway
+
+**Theorem** (Sklar's Theorem): Let $\mathbf{X}$ be a $m$-dimensional random vector with joint cumulative distribution function $F$ and marginal distribution functions $F_j, j = 1, ..., m$. The joint CDF can be expressed as 
+
+$$
+F(x_1, ..., x_m) = C(F_1(y_1), ..., F_m(y_m))
+$$
+
+with associated probability density (or mass) function
+
+$$
+f(y_1, ..., y_m) = c(F_1(y_1), ..., F_m(y_m)) f_1(y_1) ... f_m(y_m)
+$$
+
+for a $m$-dimensional copula $C$ with copula density $c$. 
+
+The inverse also holds: the copula corresponding to a multivariate CDF $F$ with marginal distribution functions $F_j, j = 1, ..., m$ can be expressed as 
+
+$$
+C(u_1, ..., u_m) = F(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))
+$$
+, and the copula density (or mass) function is 
+
+$$
+c(u_1,...,u_m) = \frac{f(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))}
+  {f_1(F_1^{-1}(u_1)) ... f_m(F_m^{-1}(u_m))}
+$$
+.
+
+Takeaway
+
+{{< pagebreak >}}
+
+![Fit a marginal distribution for each gene. The copula approach allows us to separately model the marginal distributions.](figures/ClusterDE_supp_null_generation-marginal.png)
+
+![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions.](figures/ClusterDE_supp_null_generation-covariance.png)
+
+{{< pagebreak >}}
+
+#### Note: compositional nature
+
+### Step 2
+
+Scanpy, Seurat defaults
+
+### Step 3: choice of tests
+
+### Step 4: false discovery rate control using Clipper
+
+In Step 4, ClusterDE uses the Clipper method to choose the discoveries from step 3 to output as true DE genes.
+
+#### Intuition
+
+Given that the negative control generated in step 1 accomplished its goal, the two datasets should be similar, and therefore the p-values (and DE scores) outputted by each test should be similar. This means that, when a test on a given gene has a very low p-value, but this p-value is similar across both datasets, it is reasonable to believe that this low p-value occurred due to noise. However, when a p-value is much lower in the real data than in the synthetic null data, this indicates that the gene is truly differentially expressed between the two clusters.
+
+#### Clipper
+
+##### Symmetry assumption for contrast scores
+
+In practice, the symmetry assumption may be violated.
+
+## Differential expression methods that address double-dipping
+
+### Count splitting
+
+### TN Test
+
+## Practical notes on ClusterDE usage
+
+### How to handle multiple clusters
+
+### How to decide whether to merge clusters
+
+### Whether you should cluster once or twice
 
 ```{r}
-library(flextable)
-library(readr)
+# library(flextable)
+# library(tinytable)
+# library(readr)
 ```
 
 
 ```{r}
-table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
-flextable(table_e1)
-
-table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic.csv")
-
-flextable(table_e1_synthetic)
+# table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
+# flextable(table_e1)
+# 
+# table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic_data.csv")
+# flextable(table_e1_synthetic)
 ```
 
+
+## Performance of ClusterDE
+
+- Against other DE methods
+
+- Against other null generation strategies
 
 ## Data analysis
 
@@ -100,7 +228,7 @@ flextable(table_e1_synthetic)
 ## Simulation study
 
 @HeumosSchaarLance2023
-
+@BenjaminiHochberg1995
 
 ## Appendix
 

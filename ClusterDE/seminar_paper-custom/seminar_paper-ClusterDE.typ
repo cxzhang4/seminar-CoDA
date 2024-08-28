@@ -241,9 +241,10 @@
       affiliation: [LMU Munich],
       email: [carson.zhang\@campus.lmu.de] ),
     ),
-  abstract: [In typical differential expression analysis, a clustering algorithm is applied to scRNA-seq data, and then a differential expression test is conducted in order to identify genes that are differentially expressed between the clusters. However, this procedure constitutes "double dipping", as it first clusters the data to identify cell types, and then uses those same clusters to identify cell-type marker genes. This leads to an inflated FDR for DE genes. #cite(<Song2023>) propose ClusterDE, a post-clustering DE method that controls the FDR of DE genes. ClusterDE generates a synthetic null dataset that preserves the structure of the real data, computes differences between this null dataset and the real data, then performs FDR control on the results. Simulations and real data analysis demonstrate that ClusterDE controls the FDR and identifies cell-type marker genes as top DE genes, successfully distinguishing them from housekeeping genes.
+  abstract: [In typical differential expression analysis, a clustering algorithm is applied to scRNA-seq data, and then a differential expression test is conducted in order to identify genes that are differentially expressed between the clusters. However, this procedure constitutes "double dipping", as it first clusters the data to identify cell types, and then uses those same clusters to identify cell-type marker genes. This leads to an inflated FDR for DE genes. #cite(<ClusterDE>) propose ClusterDE, a post-clustering DE method that controls the FDR of DE genes. ClusterDE generates a synthetic null dataset that preserves the structure of the real data, computes differences between this null dataset and the real data, then performs FDR control on the results. Simulations and real data analysis demonstrate that ClusterDE controls the FDR and identifies cell-type marker genes as top DE genes, successfully distinguishing them from housekeeping genes.
 
 ],
+  font: ("arial",),
   fontsize: 11pt,
   toc: true,
   toc_title: [Table of contents],
@@ -253,9 +254,29 @@
 )
 
 
-= Introduction
+== Introduction
 <introduction>
-Biologists like to identify the cell types in their scRNA-seq samples.
+=== Cell-type annotation
+<cell-type-annotation>
+==== Motivation
+<motivation>
+Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets #cite(<HeumosSchaarLance2023>);. For example, plasma B cells are one type of white blood cell that are involved in the human body’s immune response by secreting antibodies #cite(<HeumosSchaarLance2023>);. T cells are another type of white blood cell that are also involved in the immune response #cite(<GlossaryLymphocyte>);. They produce cytokines, which are signaling proteins that activate other parts of the human immune system. A scientist interested in a patient’s immune response may be interested in the counts of B cells and T cells \(and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell-type annotation is required in order to obtain this information from e.g.~a blood sample.
+
+==== Cell-type markers
+<cell-type-markers>
+==== \(TODO: other methods of annotation)
+<todo-other-methods-of-annotation>
+=== Differential expression testing
+<differential-expression-testing>
+Differential expression testing is the primary method by which scientists identify marker genes. If genes are
+
+\(define validity)
+
+\(define FDR)
+
+\(mention FDR control like Benjamini-Hochberg)
+
+TODO: mention Scanpy, Seurat, and their default methods
 
 To identify these cell types, they identify a set of cell-type marker genes.
 
@@ -263,102 +284,111 @@ To identify these cell-type marker genes, they perform differential expression t
 
 Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
 
-== Paper overview
-<paper-overview>
-= Overview of differential expression methods
-<overview-of-differential-expression-methods>
+Biologists like to identify the cell types in their scRNA-seq samples.
+
+To identify these cell types, they identify a set of cell-type marker genes.
+
+To identify these cell-type marker genes, they perform differential expression testing.
+
+Naive differential expression testing is susceptible to false discoveries caused by double-dipping.Biologists like to identify the cell types in their scRNA-seq samples.
+
+To identify these cell types, they identify a set of cell-type marker genes.
+
+To identify these cell-type marker genes, they perform differential expression testing.
+
+Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
+
+== The double-dipping issue
+<the-double-dipping-issue>
+== Differential expression methods that address the issue
+<differential-expression-methods-that-address-the-issue>
+=== Count splitting
+<count-splitting>
+=== TN Test
+<tn-test>
 == ClusterDE
 <clusterde>
+=== Summary of steps
+<summary-of-steps>
 The ClusterDE method consists of four basic steps.
 
 + Generate a synthetic null dataset that consists of a single cluster but otherwise mimics the real data.
 
-+ Perform clustering on both datasets.
++ Separately for each dataset, cluster the cells into two groups.
 
-+ Perform differential expression testing on both datasets.
++ Separately for each dataset, perform differential expression testing between the two groups from step 2.
 
-+ Combine the results to determine which genes to output as discoveries \(DE genes).
++ Combine the results to determine which genes to output as discoveries \(DE genes). #cite(<RafiGreenland2020>)
 
-== Other differential expression methods
-<other-differential-expression-methods>
-- Count splitting
+TODO: similarity to the S-value.
 
-\(see presentations)
+#figure([
+#box(width: 1304.9096989966556pt, image("figures/ClusterDE_illustration.png"))
+], caption: figure.caption(
+position: bottom, 
+[
+A visual overview of the ClusterDE method.
+]), 
+kind: "quarto-float-fig", 
+supplement: "Figure", 
+numbering: "1", 
+)
+<fig-ClusterDE-illustration>
 
-\(define validity)
+
+==== Step 1
+<step-1>
+===== Idea: negative control
+<idea-negative-control>
+==== Step 2
+<step-2>
+==== Step 3: choice of tests
+<step-3-choice-of-tests>
+==== Step 4: false discovery rate control using Clipper
+<step-4-false-discovery-rate-control-using-clipper>
+In Step 4, ClusterDE uses the Clipper method to choose which discoveries from step 3 to output as true DE genes.
+
+===== Intuition
+<intuition>
+Given that the negative control generated in step 1 accomplished its goal, the two datasets should be similar, and therefore the p-values \(and DE scores) outputted by each test should be similar. This means that, when a test on a given gene has a very low p-value, but this p-value is similar across both datasets, it is reasonable to believe that this low p-value occurred due to noise. However, when a p-value is much lower in the real data than in the synthetic null data, this indicates that the gene is truly differentially expressed between the two clusters.
+
+== Practical notes on ClusterDE usage
+<practical-notes-on-clusterde-usage>
+- Only 2 clusters
 
 #block[
 ```r
-library(flextable)
-library(readr)
+# library(flextable)
+# library(tinytable)
+# library(readr)
 ```
 
 ]
 #block[
 ```r
-table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
-```
-
-#block[
-```
-Rows: 13 Columns: 9
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-dbl (9): Cells, Genes, Minimum seq. depth, Maximum seq. depth, Median seq. d...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+# table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
+# flextable(table_e1)
+# 
+# table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic_data.csv")
+# flextable(table_e1_synthetic)
 ```
 
 ]
-```r
-flextable(table_e1)
-```
-
-#block[
-#box(width: 514.8542713567839pt, image("seminar_paper-ClusterDE_files/figure-typst/unnamed-chunk-2-1.png"))
-
-]
-```r
-table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic.csv")
-```
-
-#block[
-```
-Rows: 3 Columns: 9
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-dbl (9): Cells, Genes, Minimum seq. depth, Maximum seq. depth, Median seq. d...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-]
-```r
-flextable(table_e1_synthetic)
-```
-
-#block[
-#box(width: 514.8542713567839pt, image("seminar_paper-ClusterDE_files/figure-typst/unnamed-chunk-2-2.png"))
-
-]
-]
-= Data analysis
+== Data analysis
 <data-analysis>
-== BacSC data
+=== BacSC data
 <bacsc-data>
-== Synthetic null data generation
+=== Synthetic null data generation
 <synthetic-null-data-generation>
-== Schäfer-Strimmer
+=== Schäfer-Strimmer
 <schäfer-strimmer>
-== Results
+=== Results
 <results>
-= Simulation study
+== Simulation study
 <simulation-study>
-#cite(<HeumosSchaarLance2023>)
+#cite(<HeumosSchaarLance2023>) #cite(<BenjaminiHochberg1995>)
 
-= Appendix
+== Appendix
 <appendix>
 
 
