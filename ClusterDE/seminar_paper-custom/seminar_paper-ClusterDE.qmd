@@ -86,6 +86,56 @@ Mention warnings but lack of solutions
 
 @ISLR2
 
+## Notation
+
+We observe a cell $\times$ gene count matrix with $n$ rows (cells) and $m$ columns (genes).
+
+**Definition (count matrix)**: the **count matrix** $\mathbf{Y} \in \mathbb{N}_{0+}^{n \times m}$ is defined as
+
+$$
+\mathbf{Y} := \begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} \\
+    \vdots & \ddots & \\
+    Y_{n1} &        & Y_{nm}
+\end{bmatrix}
+$$.
+
+The goal is to find $Z \in \{0, 1\}^n$ (recall that ClusterDE can only help one differentiate between two cell types).
+
+In an ideal world, we would already know $Z$. The **idealized count matrix** $\mathbf{Y |}\hat{Z}$ is defined as
+
+$$
+\mathbf{Y |}Z := \begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} & Z_1\\
+    \vdots & \ddots & & \vdots \\ 
+    Y_{n1} &        & Y_{nm} & Z_n
+\end{bmatrix}
+$$.
+
+However, we can only approximate $Z$ through clustering, since we do not know the cell types in advance (otherwise, we would not have to do any annotation!).
+
+The **clustered count matrix** $\mathbf{Y |}\hat{Z}$ is defined as
+
+$$
+\mathbf{Y | }\hat{Z} := \begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} & \hat{Z_1}\\
+    \vdots & \ddots & & \vdots \\ 
+    Y_{n1} &        & Y_{nm} & \hat{Z_n}
+\end{bmatrix}
+$$
+
+### Double-dipping
+
+We want to test the following idealized null hypothesis.
+
+$$H_{0j} : \mu_{Z = 0, j} = \mu_{Z = 1, j}$$
+
+However, we can only test the double-dipping null hypothesis, since in the clustered count matrix, we do not observe $Z$.
+
+$$H_{0j}^{DD} : \mu_{\hat{Z} = 0, j} = \mu_{\hat{Z} = 1, j}$$
+
+False discoveries occur when the idealized null hypothesis does not hold, but the double-dipping null hypothesis holds. In other words, false discoveries occur when we made the right decision for our hypothesis test, but we set up the wrong test. Thus, we are reliant on $\mathbf{\hat{Z}}$ being a good approximation of $\mathbf{Z}$. 
+
 ## ClusterDE
 
 ### Summary of steps
@@ -101,24 +151,6 @@ The ClusterDE method consists of four basic steps, summarized in @fig-ClusterDE-
 4. Combine the results to determine which genes to output as discoveries (DE genes).
 
 ![A visual overview of the ClusterDE method. In step 1, a negative control dataset is generated. In step 2, a clustering algorithm is applied to each dataset. In step 3, a differential expression test is performed for each gene, computing a DE score for each gene in each dataset. In step 4, the difference in results is computed as a contrast score, and Clipper is used to choose a minimum contrast score for the true DE genes outputted by ClusterDE.](figures/ClusterDE_illustration.png){#fig-ClusterDE-illustration}
-
-### Notation
-
-$$
-\begin{bmatrix} 
-    Y_{11} & \dots & Y_{1m} \\
-    \vdots & \ddots & \\
-    Y_{n1} &        & Y_{nm}
-\end{bmatrix}
-$$
-
-$$
-\begin{bmatrix} 
-    Y_{11} & \dots & Y_{1m} & Z_1\\
-    \vdots & \ddots & & \vdots \\ 
-    Y_{n1} &        & Y_{nm} & Z_n
-\end{bmatrix}
-$$
 
 ### Step 1: synthetic null generation
 
@@ -179,8 +211,6 @@ ClusterDE makes the popular choice of the Gaussian copula to model the multivari
 
 ![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions (see @fig-copula-marginals) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-covariance.png){#fig-copula-covariance}
 
-#### Note: compositional nature
-
 ### Step 2: clustering
 
 This is similar to the usual clustering step in differential expression testing.
@@ -225,15 +255,37 @@ The software implementation comes from the `PairedData` `R` package.
 
 ### How to handle multiple clusters
 
+ClusterDE is only designed to handle two cell clusters. Therefore, the authors recommend the following steps in the presence of multiple clusters [@Song2023]:
+
+1. Find two clusters that look ambiguous. If you have prior knowledge, feel free to use it to manually choose these two clusters: a UMAP plot can aid in this process (see @fig-pbmc_vignette-many_clusters). If you want to do this computationally, this can be accomplished by running `Seurat::BuildClusterTree()` and examining pairs of leaf nodes that look ambiguous.
+
+2. Filter down the dataset to contain only the clusters chosen in step 1.
+
+3. Input the filtered data from step 2 as the "target data".
+
+4. Make a decision on whether to merge the clusters by examining the top DE genes discovered by ClusterDE.
+
+![A UMAP plot of a clustered PBMC dataset. We can see that clusters 2 and 8 are close, so they are candidates for input into ClusterDE. Domain knowledge validates this choice, as they represent similar cell types (monocyte subtypes).](figures/pbmc_vignette-many_clusters.png){#fig-pbmc_vignette-many_clusters}
+
 ### How to decide whether to merge clusters
+
+ClusterDE does not perform automatic cluster merging. Its purpose and focus is to identify trustworthy DE genes that can be analyzed downstream to evaluate their appropriateness as marker genes. ClusterDE therefore functions as a tool to help researchers "explore the functional and molecular characteristics of clusters" [@Song2023], not as an automated decision-maker.
 
 ### Whether you should cluster once or twice
 
+Thus far, we have considered parallel clustering on the target data and synthetic null data. However, this is not strictly necessary. ClusterDE 
+
+### Choosing a distribution to model the counts
+
 ## Performance of ClusterDE
 
-- Against other DE methods
+We discuss some of the benchmarks performed by the ClusterDE authors.
 
-- Against other null generation strategies
+### Performance against other DE methods
+
+![Figure S10 from the ClusterDE paper [@ClusterDE]. No DE genes should be discovered, since the clustering quality is poor. On most of the datasets, and with most of the types of tests, ClusterDE accomplishes this.](figures/S11.png)
+
+### Performance against other null generation strategies
 
 ## Real data analysis
 
@@ -241,13 +293,21 @@ For the seminar, we chose to investigate how an alternative strategy for covaria
 
 ### BacSC data
 
-We chose to investigate the *Bsub_minmed_PB* dataset. This is a dataset that was generated by ProBac sequencing (ProBac-seq), in order to validate the performance of this method. ProBac-seq uses messenger RNA-specific probes, and multiple probes per organism, to sequence bacterial samples [@McNulty2023], [@Samanta2024]. The *Bsub_minmed_PB* dataset contains the *B. subtilis 168* strain [see Table 1, @Ostner2024], "grown to late exponential phase in M9 minimal media supplemented with malate" [@McNulty2023].
+We chose to investigate the *Bsub_minmed_PB* dataset. This is a dataset that was generated by ProBac sequencing (ProBac-seq), in order to validate the performance of this method. ProBac-seq uses messenger RNA-specific probes, and multiple probes per organism, to sequence bacterial samples [@McNulty2023], [@Samanta2024]. The *Bsub_minmed_PB* dataset contains the *B. subtilis 168* strain, "grown to late exponential phase in M9 minimal media supplemented with malate" [see Table 1, @Ostner2024], and [@McNulty2023].
 
-This data is analyzed in [@Ostner2024], which proposes a pipeline for analysis of bacterial scRNA-seq data, and who
+This data is analyzed in [@Ostner2024], which proposes *BacSC*, a pipeline for analysis of bacterial scRNA-seq data, which we use and describe below.
+
+#### Preprocessing
+
+Because ProBac-seq generates multiple probe reads for each gene, *BacSC* performs **max-pooling**: it takes the maximum count among all probe reads [@Goodfellow-et-al-2016].
+
+*BacSC* also filters
 
 ### Synthetic null data generation
 
 ### Schäfer-Strimmer
+
+@Badri2020 showed that shrinkage 
 
 ### Results
 
