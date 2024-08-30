@@ -3,10 +3,6 @@ title: "ClusterDE: a post-clustering differential expression method"
 author:
   - name: Carson Zhang
     email: "carson.zhang@campus.lmu.de"
-    affiliations:
-      - name: LMU Munich
-        city: Munich
-        country: Germany
 abstract: |
   In typical differential expression analysis, a clustering algorithm is applied 
   to scRNA-seq data, and then a differential expression test is conducted 
@@ -20,20 +16,24 @@ abstract: |
   computes differences between this null dataset and the real data, then performs 
   FDR control on the results. Simulations and real data analysis demonstrate
   that ClusterDE controls the FDR and identifies cell-type marker genes as
-  top DE genes, successfully distinguishing them from housekeeping genes.
+  top DE genes, successfully distinguishing them from housekeeping genes. Furthermore, investigation of the covariance
 index-terms: 
   - Double-dipping
   - Differential expression
   - Compositional data analysis
 format:
-  pdf:
+  # pdf:
   # typst:
-    toc: true
-    columns: 1
-    fontsize: 11pt
+    # toc: true
+    # columns: 1
+    # fontsize: 11pt
     # keep-typ: true
-    link-citations: true
+    # link-citations: true
     # fontfamily: arial
+  nature-pdf:
+    toc: true
+    fontsize: 11pt
+    link-citations: true
 bibliography: refs.bib
 # bibliographystyle: "apa"
 ---
@@ -44,21 +44,27 @@ bibliography: refs.bib
 
 #### Motivation
 
-Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in the immune response [@GlossaryLymphocyte]. They produce cytokines, which are signaling proteins that activate other parts of the human immune system. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell-type annotation is required in order to obtain this information from e.g. a blood sample.
+Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in immune response. They produce "cytokines, which are signaling proteins that activate other parts of the human immune system" [@GlossaryLymphocyte]. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell-type annotation is required in order to obtain this information from e.g. a blood sample.
+
+TODO: distinction between different types of T cells requires better annotation methods.
 
 #### Cell-type markers
 
-#### (TODO: other methods of annotation)
+https://academic.oup.com/nar/article/51/D1/D870/6775381
+
+http://bio-bigdata.hrbmu.edu.cn/CellMarker/
+
+https://www.nature.com/articles/s41467-022-28803-w
+
+#### (TODO: other methods of annotation) (see book)
 
 ### Differential expression testing
 
-Differential expression testing is the primary method by which scientists identify marker genes. If genes are 
+Differential expression testing is the primary method by which scientists identify marker genes. If gene A is differentially expressed across two conditions, 
 
 (define validity)
 
 (define FDR)
-
-(mention FDR control like Benjamini-Hochberg)
 
 TODO: mention Scanpy, Seurat, and their default methods
 
@@ -68,21 +74,13 @@ To identify these cell-type marker genes, they perform differential expression t
 
 Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
 
-Biologists like to identify the cell types in their scRNA-seq samples.
-
-To identify these cell types, they identify a set of cell-type marker genes.
-
-To identify these cell-type marker genes, they perform differential expression testing.
-
-Naive differential expression testing is susceptible to false discoveries caused by double-dipping.Biologists like to identify the cell types in their scRNA-seq samples.
-
-To identify these cell types, they identify a set of cell-type marker genes.
-
-To identify these cell-type marker genes, they perform differential expression testing.
-
-Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
-
 ## The double-dipping issue
+
+Mention Scanpy, Seurat defaults
+
+Mention warnings but lack of solutions
+
+### Toy example illustrating double dipping
 
 ### False discoveries
 
@@ -92,7 +90,7 @@ Naive differential expression testing is susceptible to false discoveries caused
 
 ### Summary of steps
 
-The ClusterDE method consists of four basic steps.
+The ClusterDE method consists of four basic steps, summarized in @fig-ClusterDE-illustration.
 
 1. Generate a synthetic null dataset that consists of a single cluster but otherwise mimics the real data.
 
@@ -100,25 +98,49 @@ The ClusterDE method consists of four basic steps.
 
 3. Separately for each dataset, perform differential expression testing between the two groups from step 2.
 
-4. Combine the results to determine which genes to output as discoveries (DE genes). @RafiGreenland2020
-
-TODO: similarity to the S-value.
+4. Combine the results to determine which genes to output as discoveries (DE genes).
 
 ![A visual overview of the ClusterDE method. In step 1, a negative control dataset is generated. In step 2, a clustering algorithm is applied to each dataset. In step 3, a differential expression test is performed for each gene, computing a DE score for each gene in each dataset. In step 4, the difference in results is computed as a contrast score, and Clipper is used to choose a minimum contrast score for the true DE genes outputted by ClusterDE.](figures/ClusterDE_illustration.png){#fig-ClusterDE-illustration}
 
-### Step 1
+### Notation
+
+$$
+\begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} \\
+    \vdots & \ddots & \\
+    Y_{n1} &        & Y_{nm}
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix} 
+    Y_{11} & \dots & Y_{1m} & Z_1\\
+    \vdots & \ddots & & \vdots \\ 
+    Y_{n1} &        & Y_{nm} & Z_n
+\end{bmatrix}
+$$
+
+### Step 1: synthetic null generation
 
 #### Idea: negative control
 
 #### Idea: copulas
 
-To actually generate this negative control data, [@ClusterDE] use the copula approach. Special methods are required to simulate data from the desired multivariate negative binomial distribution, as statistical packages such as `R` do not come with samplers already implemented. Thus, ClusterDE uses the copula generator implemented in scDesign3 [@scDesign3]  for its *in silico* negative control data.
+To actually generate this negative control data, [@ClusterDE] use the copula approach. Special methods are required to simulate data from the desired multivariate negative binomial distribution, as statistical packages such as `R` do not come with samplers already implemented. Thus, ClusterDE uses the copula-based sampler implemented in scDesign3 [@scDesign3]  for its *in silico* negative control data: that is, data that was created by a computer [@Ekins2007].
+
+##### Probability Integral Transform
 
 **Theorem (Probability Integral Transform):** $F_X(X) \sim \text{Uniform}(0, 1)$.
 
+(A more rigorous proof and discussion can be found in Theorem 2.1.10 in Casella and Berger [@CasellaBerger].)
+
 ##### Intuition for the PIT
 
-Takeaway
+Takeaway: if we can compute $F^{-1}$, we can move freely between a standard uniform random variable and a random variable with distribution $F$. Sklar's Theorem, and therefore the copula approach to modeling multivariate distributions, relies on this result.
+
+##### Sklar's Theorem
+
+(The theorem statement is adapted from Czado [@Czado].)
 
 **Theorem** (Sklar's Theorem): Let $\mathbf{X}$ be a $m$-dimensional random vector with joint cumulative distribution function $F$ and marginal distribution functions $F_j, j = 1, ..., m$. The joint CDF can be expressed as 
 
@@ -147,27 +169,35 @@ c(u_1,...,u_m) = \frac{f(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))}
 $$
 .
 
-Takeaway
+**Proof**: See Nelsen [@Nelsen2006].
 
-{{< pagebreak >}}
+Sklar's Theorem allows statisticians to use the copula approach to model the joint distribution: the goal is now to find a copula $C$ that yields a good approximation of $F$.
 
-![Fit a marginal distribution for each gene. The copula approach allows us to separately model the marginal distributions.](figures/ClusterDE_supp_null_generation-marginal.png)
+ClusterDE makes the popular choice of the Gaussian copula to model the multivariate gene distribution, which is convenient because it has existing software implementations [see mvtnorm, numpy].
 
-![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions.](figures/ClusterDE_supp_null_generation-covariance.png)
+![Fit a marginal distribution for each gene. The copula approach allows us to model the marginal distributions separately from the covariance structure of the variables (see @fig-copula-covariance) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-marginal.png){#fig-copula-marginals}
 
-{{< pagebreak >}}
+![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions (see @fig-copula-marginals) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-covariance.png){#fig-copula-covariance}
 
 #### Note: compositional nature
 
-### Step 2
+### Step 2: clustering
+
+This is similar to the usual clustering step in differential expression testing.
 
 Scanpy, Seurat defaults
 
-### Step 3: choice of tests
+### Step 3: DE testing
+
+DE tests are performed as usual on the two clusters.
+
+Define Wilcoxon rank-sum test
 
 ### Step 4: false discovery rate control using Clipper
 
 In Step 4, ClusterDE uses the Clipper method to choose the discoveries from step 3 to output as true DE genes.
+
+TODO: similarity to the S-value.
 
 #### Intuition
 
@@ -175,23 +205,51 @@ Given that the negative control generated in step 1 accomplished its goal, the t
 
 #### Clipper
 
-##### Symmetry assumption for contrast scores
-
-In practice, the symmetry assumption may be violated.
-
 ## Differential expression methods that address double-dipping
 
 ### Count splitting
 
 ### TN Test
 
-## Practical notes on ClusterDE usage
+### "Traditional" FDR control methods
+
+(mention FDR control like Benjamini-Hochberg)
+
+## Considerations for using ClusterDE in practice
+
+### Symmetry assumption for contrast scores
+
+In step 4, the Clipper method for FDR control assumes that the contrast score distribution is symmetric. In practice, this symmetry assumption may be violated. ClusterDE tests the symmetry of the contrast score distribution using Yuen's trimmed mean test: if the test statistic has $p$-value $< 0.001$, reject the null hypothesis of symmetry, and perform a contrast score adjustment. It uses a one-sided "greater than" hypothesis for this test: that is, it only adjusts the contrast scores when too few contrast scores are negative. This is because the authors wanted to be conservative with their adjustment strategy, only transforming the contrast scores when they know that there would have been too many false discoveries. When there are too many negative contrast scores, these will not lead to an inflated false discovery rate, since only positive contrast scores become discoveries. 
+
+The software implementation comes from the `PairedData` `R` package.
 
 ### How to handle multiple clusters
 
 ### How to decide whether to merge clusters
 
 ### Whether you should cluster once or twice
+
+## Performance of ClusterDE
+
+- Against other DE methods
+
+- Against other null generation strategies
+
+## Real data analysis
+
+For the seminar, we chose to investigate how an alternative strategy for covariance matrix estimation in the copula (step 1 of ClusterDE) improves . If this is the case, then 
+
+### BacSC data
+
+We chose to investigate the *Bsub_minmed_PB* dataset. This is a dataset that was generated by ProBac sequencing (ProBac-seq), in order to validate the performance of this method. ProBac-seq uses messenger RNA-specific probes, and multiple probes per organism, to sequence bacterial samples [@McNulty2023], [@Samanta2024]. The *Bsub_minmed_PB* dataset contains the *B. subtilis 168* strain [see Table 1, @Ostner2024], "grown to late exponential phase in M9 minimal media supplemented with malate" [@McNulty2023].
+
+This data is analyzed in [@Ostner2024], which proposes a pipeline for analysis of bacterial scRNA-seq data, and who
+
+### Synthetic null data generation
+
+### Schäfer-Strimmer
+
+### Results
 
 ```{r}
 # library(flextable)
@@ -208,27 +266,13 @@ In practice, the symmetry assumption may be violated.
 # flextable(table_e1_synthetic)
 ```
 
-
-## Performance of ClusterDE
-
-- Against other DE methods
-
-- Against other null generation strategies
-
-## Data analysis
-
-### BacSC data
-
-### Synthetic null data generation
-
-### Schäfer-Strimmer
-
-### Results
-
 ## Simulation study
 
-@HeumosSchaarLance2023
-@BenjaminiHochberg1995
+## Discussion
+
+Different copula generation strategies.
 
 ## Appendix
+
+## References
 
