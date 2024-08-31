@@ -34,6 +34,12 @@ format:
     toc: true
     fontsize: 11pt
     link-citations: true
+    equal-margins: true
+  # pdf: default
+  # plos-pdf:
+  #   toc: true
+  #   fontsize: 11pt
+  #   link-citations: true
 bibliography: refs.bib
 # bibliographystyle: "apa"
 ---
@@ -71,23 +77,37 @@ https://www.nature.com/articles/s41467-022-28803-w
 
 Differential expression testing is the primary method by which scientists identify marker genes. If gene A is differentially expressed across two conditions, then it may be a good candidate for a marker gene.
 
-(define validity)
-
-TODO: mention Scanpy, Seurat, and their default methods
-
-To identify these cell types, they identify a set of cell-type marker genes.
-
-To identify these cell-type marker genes, they perform differential expression testing.
-
-Naive differential expression testing is susceptible to false discoveries caused by double-dipping.
+(TODO: define validity)
 
 ## The double-dipping issue
+
+However, when the two conditions are two clusters, we have an issue: we used our data twice. First, we clustered into two groups. Then, we tested for variation in gene expression levels between those groups. This is problematic because we found variation in the data that may be spurious, and then we tested for variation *that we already know is there*, leading to invalid inference.
 
 Mention Scanpy, Seurat defaults
 
 Mention warnings but lack of solutions
 
 ### Toy example illustrating double dipping
+
+```{r }
+# LLM code
+library(mvtnorm)
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Generate multivariate normal data
+n <- 1000  # number of points
+mu <- c(0, 0)  # mean vector
+sigma <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)  # covariance matrix
+x <- rmvnorm(n, mean = mu, sigma = sigma)
+
+# Create scatter plot
+plot(x,
+     col = "gray", 
+     pch = 16)
+```
+
 
 ### False discoveries
 
@@ -105,7 +125,7 @@ $$
 
 In the above definition, the $\vee$ operator takes the maximum of the left and right expressions. This avoids dividing by $0$ when we do not reject any null hypotheses. For simplicity, we may omit this operator in the rest of this paper.
 
-# Notation for data and tests
+# Notation
 
 We observe a cell $\times$ gene count matrix with $n$ rows (cells) and $m$ columns (genes).
 
