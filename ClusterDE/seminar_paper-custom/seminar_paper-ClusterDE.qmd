@@ -321,6 +321,18 @@ We note the similarity of the DE score definition, and therefore interpretation,
 
 ![The Clipper method for FDR control. Part of Figure 1.b. from Ge et al. [@Clipper].](figures/clipper-fig1-threshold.png)
 
+**Definition (Clipper cutoff)**: Clipper chooses the minimum positive contrast score $t^*$ to output as a discovery as follows.
+
+$$
+t* = \min\left\{t \in \{|C_j|: C_j \neq 0\}: \frac{1+\#\{j:C_j \leq -t\}}{\#\{j:C_j \geq t\} \lor 1} \leq q\right\}
+$$
+
+#### Intuition for the Clipper cutoff
+
+@fig-clipper_cutoff-ipad illustrates the
+
+![](figures/clipper_cutoff.jpg){#fig-clipper_cutoff-ipad}
+
 # Differential expression methods that address double-dipping
 
 ## Count splitting
@@ -365,7 +377,7 @@ Thus far, we have considered parallel clustering on the target data and syntheti
 
 Thus far, we have used the negative binomial distribution to model the gene counts. This is because scRNA-seq data are typically overdispersed, making a Poisson model inappropriate (since in the Poisson distribution, the mean is exactly equal to the variance) [@neufeld2023negativebinomialcountsplitting].
 
-However, zero-inflated versions of these distributions can also be reasonable choices, since the count data is often very sparse. *BacSC* is a pipeline for bacterial scRNA-seq analysis which defines a protocol for choosing between these four distribution distributions. The sparsity of the count data makes it difficult for optimizers to converge when trying to fit a negative binomial distribution, making the zero-inflated version appropriate in such a situation.
+However, zero-inflated versions of these distributions can also be reasonable choices, since the count data is often very sparse. *BacSC* is a pipeline for bacterial scRNA-seq analysis which defines a protocol for choosing between these four distribution distributions. The sparsity of the count data makes it difficult for optimizers to converge when trying to fit a negative binomial distribution, making the zero-inflated version appropriate in such a situation. We ran into similar issues when trying to generate the synthetic null datasets for this analysis using `ProDG`, an experimental Python package for prokaryotic data generation that uses the copula approach.
 
 # Performance of ClusterDE
 
@@ -380,6 +392,8 @@ In one of the authors' benchmarks, they compared ClusterDE against count splitti
 ![Figure S10 from the ClusterDE paper. No DE genes should be discovered, since the clustering quality is poor. On most of the datasets, and with most of the types of tests, ClusterDE accomplishes this  [@ClusterDE].](figures/S11.png){#fig-pbmc-no_de_genes}
 
 ## Performance against other null generation strategies
+
+Knockoffs
 
 # Data analysis
 
@@ -436,6 +450,8 @@ Generally, the variance of each summary statistic looks subjectively similar acr
 In terms of the summary statistics examined here, the two correlation estimators do not look substantially different. However, one surprising result is that the Schaefer-Strimmer datasets have systematically larger maximum counts, where the minimum maximum count for a Schaefer-Strimmer dataset is higher than the maximum maximum count for an empirical correlation dataset. This is surprising because the Schaefer-Strimmer estimate is a shrinkage estimate, and we would expect that if the variances of the count distributions have been shrunk, then we would observe extremely large counts less often. Further exploration is required to determine the cause of this phenomenon.
 
 No differential expression testing was conducted here, so the sensitivity of the actual DE genes outputted by ClusterDE to the correlation estimator is currently unknown. Based on these initial results, we do not expect a substantial difference in the quality of DE genes outputted by ClusterDE.
+
+Further investigations into ClusterDE could include a benchmark of different copula families. We only considered the Gaussian copula here. The ClusterDE package also supports vine copulas, which they say are better but computationally very expensive. A more detailed investigation of the computation vs. performance tradeoff could be valuable here.
 
 # Conclusion
 
