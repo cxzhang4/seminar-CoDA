@@ -38,11 +38,11 @@ bibliography: refs.bib
 # bibliographystyle: "apa"
 ---
 
-## Introduction
+# Introduction
 
-### Cell-type annotation
+## Cell-type annotation
 
-#### Motivation
+### Motivation
 
 Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in immune response. They produce "cytokines, which are signaling proteins that activate other parts of the human immune system" [@GlossaryLymphocyte]. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell type annotation is required in order to obtain this information from e.g. a blood sample.
 
@@ -50,7 +50,7 @@ TODO: distinction between different types of T cells requires better annotation 
 
 TODO: discussion of terminology (type vs. identity).
 
-#### Manual annotation using cell type markers
+### Manual annotation using cell type markers
 
 To perform this annotation, it is common to use marker genes. In an idealized setting, a cell type would have a unique marker: a single gene such that when this gene is highly expressed in a cell, we are confident that the cell has a given type. However, 
 this is often unrealistic or unachievable: therefore, we seek some some combination of marker genes that, when taken together, identify a cell type. 
@@ -65,9 +65,9 @@ http://bio-bigdata.hrbmu.edu.cn/CellMarker/
 
 https://www.nature.com/articles/s41467-022-28803-w
 
-#### Automated annotation
+### Automated annotation
 
-### Differential expression testing
+## Differential expression testing
 
 Differential expression testing is the primary method by which scientists identify marker genes. If gene A is differentially expressed across two conditions, then it may be a good candidate for a marker gene.
 
@@ -93,7 +93,7 @@ Mention warnings but lack of solutions
 
 Consider the notation defined in @fig-fdr-islr.
 
-Let $\frac{V}{R}$ be the **false discovery proportion**. While this already looks like the thing we want to control, it is impossible to control directly. This is because when we are given a single particular dataset, we have no guarantees about which hypotheses are true or false: otherwise, we wouldn't need to perform hypothesis tests in the first place. However, we can control the expected false discovery proportion [@ISLR2], which we call the **false discovery rate** $E[\frac{V}{R}]$. 
+Let $\frac{V}{R}$ be the **false discovery proportion**. While this already looks like the thing we want to control, it is impossible to control directly. This is because when we are given a single particular dataset, we have no guarantees about the values of $V$ and $F$, i.e. which hypotheses are true or false. If we had such guarantees, then we wouldn't need to perform hypothesis tests in the first place. However, we can control the expected false discovery proportion [@ISLR2], which we call the **false discovery rate** $E[\frac{V}{R}]$. 
 
 ![A table defining notation for various decisions resulting from hypothesis tests. Table 13.2 from ISLR [@ISLR2].](figures/islr-table.png){#fig-fdr-islr}
 
@@ -105,7 +105,7 @@ $$
 
 In the above definition, the $\vee$ operator takes the maximum of the left and right expressions. This avoids dividing by $0$ when we do not reject any null hypotheses. For simplicity, we may omit this operator in the rest of this paper.
 
-## Notation for data and tests
+# Notation for data and tests
 
 We observe a cell $\times$ gene count matrix with $n$ rows (cells) and $m$ columns (genes).
 
@@ -137,13 +137,13 @@ The **clustered count matrix** $\mathbf{Y |}\hat{Z}$ is defined as
 
 $$
 \mathbf{X | }\hat{Z} := \begin{bmatrix} 
-    X_{11} & \dots & _{1m} & \hat{Z_1}\\
+    X_{11} & \dots & X_{1m} & \hat{Z_1}\\
     \vdots & \ddots & & \vdots \\ 
     X_{n1} &        & X_{nm} & \hat{Z_n}
 \end{bmatrix}
 $$
 
-### Double-dipping
+## Double-dipping
 
 We want to test the following idealized null hypothesis.
 
@@ -157,9 +157,9 @@ False discoveries occur when the idealized null hypothesis does not hold, but th
 
 Song, et al. propose ClusterDE as a way to control the false discovery rate in differential expression testing.
 
-## ClusterDE
+# ClusterDE
 
-### Summary of steps
+## Summary of steps
 
 The ClusterDE method consists of four basic steps, summarized in @fig-ClusterDE-illustration.
 
@@ -173,13 +173,13 @@ The ClusterDE method consists of four basic steps, summarized in @fig-ClusterDE-
 
 ![A visual overview of the ClusterDE method. In step 1, a negative control dataset is generated. In step 2, a clustering algorithm is applied to each dataset. In step 3, a differential expression test is performed for each gene, computing a DE score for each gene in each dataset. In step 4, the difference in results is computed as a contrast score, and Clipper is used to choose a minimum contrast score for the true DE genes outputted by ClusterDE.](figures/ClusterDE_illustration.png){#fig-ClusterDE-illustration}
 
-### Step 1: synthetic null generation
+## Step 1: synthetic null generation
 
-#### Idea: negative control
+### Idea: negative control
 
 The idea of using a synthetic dataset to represent the null hypothesis comes from the broader idea of negative control. To illustrate this 
 
-#### Idea: copulas
+### Generating a negative control dataset using a copula
 
 To actually generate this negative control data, [@ClusterDE] use the copula approach. This is because statistical packages such as `R` do not come with samplers already implemented, so special methods are required to simulate data from the desired multivariate negative binomial distribution. Thus, ClusterDE uses the copula-based sampler implemented in scDesign3 [@scDesign3]  for its *in silico* negative control data: that is, data that was created by a computer [@Ekins2007]. We describe some of the mathematics underlying copulas.
 
@@ -197,11 +197,11 @@ $$
 \end{aligned}
 $$
 
-Proof from the Wikipedia page [@WikipediaPIT], annotations from my own previous writing [@ZhangPIT]. A more rigorous proof and discussion can be found in Theorem 2.1.10 in Casella and Berger [@CasellaBerger].
+Proof from the Wikipedia page [@WikipediaPIT], annotations from a blog post [@ZhangPIT]. A more rigorous proof and discussion can be found in Theorem 2.1.10 in Casella and Berger [@CasellaBerger].
 
-##### Intuition for the PIT
+#### Intuition for the PIT
 
-One can imagine drawing the distribution of $F_X(X)$ one section at a time, dealing with intervals that are between known values of $F_X(X)$ (i.e. between quantiles). Since values of $X$ between the $p$ and $q$-quantiles (with $p < q$) occur with probability $q - p$, and the distance along the horizontal axis of the density plot of $F_X(X)$ is $q - p$, it follows that the value of the density of function of $F_X(X)$ is always $\frac{q - p}{q - p} = 1$. Read my blog post if you are interested in a more detailed discussion of this idea [@ZhangPIT].
+One can imagine drawing the distribution of $F_X(X)$ one section at a time, dealing with intervals that are between known values of $F_X(X)$ (i.e. between quantiles). Since values of $X$ between the $p$ and $q$-quantiles (with $p < q$) occur with probability $q - p$, and the distance along the horizontal axis of the density plot of $F_X(X)$ is $q - p$, it follows that the value of the density of function of $F_X(X)$ is always $\frac{q - p}{q - p} = 1$. A more detailed discussion of this idea can be found in the blog [@ZhangPIT].
 
 The main takeaway is that if we can compute $F^{-1}$, we can move freely between a standard uniform random variable and a random variable with distribution $F$. Sklar's Theorem, and therefore the copula approach to modeling multivariate distributions, relies on this result.
 
@@ -224,6 +224,7 @@ The inverse also holds: the copula corresponding to a multivariate CDF $F$ with 
 $$
 C(u_1, ..., u_m) = F(F_1^{-1}(u_1), ..., F_m^{-1}(u_m))
 $$
+
 , and the copula density (or mass) function is 
 
 $$
@@ -236,13 +237,19 @@ $$
 
 **Proof**: See Nelsen [@Nelsen2006].
 
-Sklar's Theorem allows statisticians to use the copula approach to model the joint distribution: the goal is now to find a copula $C$ that yields a good approximation of $F$. ClusterDE makes the popular choice of the Gaussian copula to model the multivariate gene distribution, which is convenient because it has existing software implementations [see mvtnorm, numpy]. Then, to generate data from $F$ using the copula $C$, we can perform the following steps, illustrated in {@eq-copula-mvn_to_mvnb}:
+Sklar's Theorem allows statisticians to use the copula approach to model the joint distribution: the goal is now to find a copula $C$ that yields a good approximation of $F$. ClusterDE makes the popular choice of the Gaussian copula to model the multivariate gene distribution, which is convenient because it has existing software implementations [see mvtnorm, numpy]. Then, to generate data from $F$ using the copula $C$, we can perform the following steps:
 
-- Sample $\tilde{Z} \in \mathbb{R}^{n \times m}$ from the multivariate Gaussian distribution with a correlation (or covariance) matrix that matches the target distribution.
+- Estimate the correlation matrix of the target distribution (see @fig-copula-covariance).
+
+- Sample $\tilde{Z} \in \mathbb{R}^{n \times m}$ from the multivariate Gaussian distribution with a correlation (or covariance) matrix that matches the target distribution (see @fig-copula-marginals).
 
 - Compute the Gaussian CDF to transform the marginal distributions into standard uniform marginals.
 
-- Compute the inverse negative binomial CDF to transform the uniform marginals . The correlation structure from the original multivariate Gaussian data will be preserved.
+- Compute the inverse negative binomial CDF to transform the uniform marginal distributions into negative binomial distributions (see @eq-copula-mvn_to_mvnb). The correlation structure from the original multivariate Gaussian data will be preserved.
+
+![Fit a marginal distribution for each gene. The copula approach allows us to model the marginal distributions separately from the covariance structure of the variables (see @fig-copula-covariance) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-marginal.png){#fig-copula-marginals}
+
+![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions (see @fig-copula-marginals) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-covariance.png){#fig-copula-covariance}
 
 $$
 \begin{bmatrix} 
@@ -257,11 +264,7 @@ $$
 \end{bmatrix}
 $$ {#eq-copula-mvn_to_mvnb}
 
-![Fit a marginal distribution for each gene. The copula approach allows us to model the marginal distributions separately from the covariance structure of the variables (see @fig-copula-covariance) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-marginal.png){#fig-copula-marginals}
-
-![Estimate the covariance matrix for the $m$-dimensional gene distribution. The copula approach allows us to model the correlations between genes separately from their marginal distributions (see @fig-copula-marginals) [@ClusterDEManual].](figures/ClusterDE_supp_null_generation-covariance.png){#fig-copula-covariance}
-
-### Step 2: Clustering
+## Step 2: Clustering
 
 This is the usual clustering step in differential expression testing. We perform clustering for both the target (real) data and synthetic null data.
 
@@ -269,21 +272,21 @@ The generally-accepted current best practice is to use the Leiden algorithm to c
 
 The Leiden algorithm is supported by both `Scanpy` and `Seurat`. However, since Louvain is still the `Seurat` default, and there is currently not a fully-featured `R` implementation, some of the analyses discussed in this paper (especially those that come from the ClusterDE paper) may use the Louvain algorithm.
 
-### Step 3: DE testing
+## Step 3: DE testing
 
 DE tests are performed as usual on the two clusters.
 
 Define Wilcoxon rank-sum test. `presto` package in R.
 
-### Step 4: false discovery rate control using Clipper
+## Step 4: false discovery rate control using Clipper
 
 In Step 4, ClusterDE uses the Clipper method to choose the discoveries from step 3 to output as true DE genes.
 
-#### Intuition
+### Intuition
 
-Given that the negative control generated in step 1 accomplished its goal, the two datasets should be similar, and therefore the p-values (and DE scores) outputted by each test should be similar. This means that, when a test on a given gene has a very low p-value, but this p-value is similar across both datasets, it is reasonable to believe that this low p-value occurred due to noise. However, when a p-value is much lower in the real data than in the synthetic null data, this indicates that the gene is truly differentially expressed between the two clusters.
+Given that the negative control generated in step 1 accomplished its goal, the two datasets should be similar, and therefore the $p$-values (and DE scores) outputted by each test should be similar. This means that, when a test on a given gene has a very low $p$-value, but this $p$-value is similar across both datasets, it is reasonable to believe that this low $p$-value occurred due to noise. However, when a $p$-value is much lower in the real data than in the synthetic null data, this indicates that the gene is truly differentially expressed between the two clusters.
 
-#### Clipper
+### Clipper
 
 As input, Clipper takes contrast scores $C_1, ..., C_m$ (one for every gene).
 
@@ -310,29 +313,29 @@ $$
 From this definition, we can see that high contrast scores correspond to more confident discoveries.
 This follows from the fact that lower $p$-values on the target data indicate 
 
-We note the similarity of the DE score definition, and therefore interpretation, to the $S$-value [@RafiGreenland2020]. The $S$-value of a test is defined as $-\log_2(P)$, where $P$ is the $p$-value of the test. This can be interpreted as the amount of information the test contains against the null hypothesis, or alternatively, how surprising the test result is under the null hypothesis, with larger values indicating more information and more surprise. To see this, consider that the logarithm (whether base $2$ or $10$) of a smaller $p$-value will be a negative number with higher magnitude, and the negative sign turns this into a larger positive number. The DE score $S_j = \log_{10}(2)$ times the $S$-value, so the interpretations still hold.
+We note the similarity of the DE score definition, and therefore interpretation, to the $S$-value [@RafiGreenland2020]. The $S$-value of a test is defined as $-\log_2(P)$, where $P$ is the $p$-value of the test. This can be interpreted as the amount of information the test contains against the null hypothesis, or alternatively, how surprising the test result is under the null hypothesis, with larger values indicating more information and more surprise. To see this, consider that the logarithm (whether base $2$ or $10$) of a smaller $p$-value will be a negative number with higher magnitude, and the negative sign turns this into a larger positive number. The DE score $S_j$ is $\log_{10}(2)$ times the $S$-value, so the interpretations still hold.
 
 ![The Clipper method for FDR control. Part of Figure 1.b. from Ge et al. [@Clipper].](figures/clipper-fig1-threshold.png)
 
-## Differential expression methods that address double-dipping
+# Differential expression methods that address double-dipping
 
-### Count splitting
+## Count splitting
 
-### TN Test
+## TN Test
 
-### "Traditional" FDR control methods
+## "Traditional" FDR control methods
 
 (mention FDR control like Benjamini-Hochberg)
 
-## Considerations for using ClusterDE in practice
+# Considerations for using ClusterDE in practice
 
-### Symmetry assumption for contrast scores
+## Symmetry assumption for contrast scores
 
 In step 4, the Clipper method for FDR control assumes that the contrast score distribution is symmetric. In practice, this symmetry assumption may be violated. ClusterDE tests the symmetry of the contrast score distribution using Yuen's trimmed mean test: if the test statistic has $p$-value $< 0.001$, reject the null hypothesis of symmetry, and perform a contrast score adjustment. It uses a one-sided "greater than" hypothesis for this test: that is, it only adjusts the contrast scores when too few contrast scores are negative. This is because the authors wanted to be conservative with their adjustment strategy, only transforming the contrast scores when they know that there would have been too many false discoveries. When there are too many negative contrast scores, these will not lead to an inflated false discovery rate, since only positive contrast scores become discoveries. 
 
 The software implementation for Yuen's trimmed mean test comes from the `PairedData` `R` package.
 
-### How to handle multiple clusters
+## How to handle multiple clusters
 
 ClusterDE is only designed to handle two cell clusters. Therefore, the authors recommend the following steps in the presence of multiple clusters [@ClusterDE]:
 
@@ -346,15 +349,15 @@ ClusterDE is only designed to handle two cell clusters. Therefore, the authors r
 
 ![A UMAP plot of a clustered PBMC dataset. We can see that clusters 2 and 8 are close, so they are candidates for input into ClusterDE. Domain knowledge validates this choice, as they represent similar cell types (monocyte subtypes) [@ClusterDEManual].](figures/pbmc_vignette-many_clusters.png){#fig-pbmc_vignette-many_clusters}
 
-### How to decide whether to merge clusters
+## How to decide whether to merge clusters
 
 ClusterDE does not perform automatic cluster merging. Its purpose and focus is to identify trustworthy DE genes that can be analyzed downstream to evaluate their appropriateness as marker genes. ClusterDE therefore functions as a tool to help researchers "explore the functional and molecular characteristics of clusters" [@ClusterDE], not as an automated decision-maker [@ClusterDE].
 
-### Whether you should cluster once or twice
+## Whether you should cluster once or twice
 
 Thus far, we have considered parallel clustering on the target data and synthetic null data. However, this is not strictly necessary. ClusterDE 
 
-### Choosing a distribution to model the counts
+## Choosing a distribution to model the counts
 
 Thus far, we have used the negative binomial distribution to model the gene counts. This is because scRNA-seq data are typically overdispersed, making a Poisson model inappropriate (since in the Poisson distribution, the mean is exactly equal to the variance) [@neufeld2023negativebinomialcountsplitting].
 
@@ -362,11 +365,11 @@ However, zero-inflated versions of these distributions can also be reasonable ch
 
 We defer a more detailed discussion to later, where we describe *BacSC*: a pipeline for bacterial scRNA-seq analysis which defines a protocol for choosing a distribution.
 
-## Performance of ClusterDE
+# Performance of ClusterDE
 
 We discuss some of the benchmarks performed by the ClusterDE authors.
 
-### Performance against other DE methods
+## Performance against other DE methods
 
 In one of the authors' benchmarks, they compared ClusterDE against count splitting, the TN test, and the default Seurat pipeline on four PBMC datasets. These datasets were chosen because they were clustered poorly, and therefore good differential expression performance is defined by the discovery of no DE genes (see @fig-pbmc-no_de_genes).
 
@@ -374,19 +377,19 @@ In one of the authors' benchmarks, they compared ClusterDE against count splitti
 
 ![Figure S10 from the ClusterDE paper. No DE genes should be discovered, since the clustering quality is poor. On most of the datasets, and with most of the types of tests, ClusterDE accomplishes this  [@ClusterDE].](figures/S11.png){#fig-pbmc-no_de_genes}
 
-### Performance against other null generation strategies
+## Performance against other null generation strategies
 
-## Data analysis
+# Data analysis
 
 For the seminar, we chose to investigate how an shrinkage esimate of the covariance matrix affects the synthetic null dataset (step 1 of ClusterDE).
 
-### B. subtilis 168 dataset
+## B. subtilis 168 dataset
 
 We chose to investigate the *Bsub_minmed_PB* dataset. This is a dataset that was generated by ProBac sequencing (ProBac-seq), in order to validate the performance of this method. ProBac-seq uses messenger RNA-specific probes, and multiple probes per organism, to sequence bacterial samples [@McNulty2023], [@Samanta2024]. The *Bsub_minmed_PB* dataset contains the *B. subtilis 168* strain, "grown to late exponential phase in M9 minimal media supplemented with malate" [see Table 1, @Ostner2024], and [@McNulty2023].
 
 This data is analyzed in [@Ostner2024], which proposes *BacSC*, a pipeline for analysis of bacterial scRNA-seq data, which we use and describe below.
 
-#### Preprocessing
+### Preprocessing
 
 Because ProBac-seq generates multiple probe reads for each gene, *BacSC* performs **max-pooling**: it takes the maximum count among all probe reads [@Goodfellow-et-al-2016]. 
 
@@ -394,13 +397,13 @@ It filters out all cells with a sequencing depth less than 100: that is, cells w
 
 Note that mitochondrial genes are not filtered out here, while they would be for eukaryotic scRNA-seq data. This is because bacteria do not have mitochondria [@Ostner2024].
 
-### Synthetic null data generation
+## Synthetic null data generation
 
 ### Schäfer-Strimmer
 
 @Badri2020 showed that shrinkage 
 
-### Results
+## Results
 
 ```{r}
 # library(flextable)
@@ -417,13 +420,13 @@ Note that mitochondrial genes are not filtered out here, while they would be for
 # flextable(table_e1_synthetic)
 ```
 
-## Simulation study
+# Simulation study
 
-## Discussion
+# Discussion
 
 Different copula generation strategies.
 
-## Appendix
+# Appendix
 
-## References
+# References
 
