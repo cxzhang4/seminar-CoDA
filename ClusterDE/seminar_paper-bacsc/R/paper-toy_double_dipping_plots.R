@@ -53,6 +53,6 @@ p2 <- ggboxplot(df, x = "cluster", y = "X2",
 
 ggarrange(p1, p2, common.legend = TRUE) |>
   ggexport(filename = "../../seminar_paper-custom/figures/fig-boxplot-S15.png",
-           width = 750, height = 300)
+           width = 750, height = 350)
 
 # ggarrange(p_mvn_gray, p_mvn_clustered, p1, p2)

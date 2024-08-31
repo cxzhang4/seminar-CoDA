@@ -329,9 +329,17 @@ $$
 
 #### Intuition for the Clipper cutoff
 
-@fig-clipper_cutoff-ipad illustrates the
+@fig-clipper_cutoff-ipad illustrates the intuition behind the Clipper cutoff. For our $m$ hypothesis tests, there are two cases:
 
-![](figures/clipper_cutoff.jpg){#fig-clipper_cutoff-ipad}
+1. The null hypothesis is true. Then the contrast score distribution is symmetric: there is no reason to assume that the target data has systematically more surprising results than the synthetic null data, since both datasets contain only a single cell type.
+
+2. The null hypothesis is false. Then there are truly multiple cell types in the target data. However, we still have only one cell type in the synthetic null data (by construction). Therefore, we should expect to find more true differentially expressed genes, and the differences should be greater in the target data; after all, there is true variation in the target data. 
+
+Recall that we are only going to consider some section of the right tail of this distribution as discoveries. How can we choose which section? 
+
+Let $t > 0$ be arbitrary. We know 
+
+![Motivation for the choice of contrast score cutoff. The orange tails represent the distribution under the null hypothesis. Since this distribution is symmetric, we know the rest of the right tail represents true discoveries, and we can use this symmetry to estimate the FDR at a given threshold value.](figures/clipper_cutoff.jpg){#fig-clipper_cutoff-ipad}
 
 # Differential expression methods that address double-dipping
 
@@ -453,13 +461,17 @@ No differential expression testing was conducted here, so the sensitivity of the
 
 Further investigations into ClusterDE could include a benchmark of different copula families. We only considered the Gaussian copula here. The ClusterDE package also supports vine copulas, which they say are better but computationally very expensive. A more detailed investigation of the computation vs. performance tradeoff could be valuable here.
 
+Furthermore, *BacSC* implements some extensions to the ClusterDE method. 
+
 # Conclusion
 
-Cell annotation provides analysts and domain experts with important information about their scRNA-seq samples. While various forms of annotation exist, including completely automated annotation, one of the most popular strategies for annotation is manual annotation based on a set of marker genes. To discover new marker genes, analysts often perform differential expression testing, in which they first cluster their cells into two groups, and then test each gene for differences between the groups. However, in this process,  
+Cell annotation provides analysts and domain experts with important information about their scRNA-seq samples. While various forms of annotation exist, including completely automated annotation, one of the most popular strategies for annotation is manual annotation based on a set of marker genes. To discover new marker genes, analysts often perform differential expression testing, in which they first cluster their cells into two groups, and then test each gene for differences between the groups. However, this process double-dips, and therefore leads to an inflated false discovery rate if executed naively. Various methods exist to counteract this, but ClusterDE performs the best on benchmarks. ClusterDE's use of a synthetic null dataset as a negative control, combined with its choice of cutoff using Clipper, allow it to successfully control the false discovery rate. 
+
+In this paper, a shrinkage estimate of the covariance matrix was explored as a potential extension to ClusterDE's null data generation step. Despite previous theoretical and empirical justifications for its use, this Schaefer-Strimmer covariance estimate does not produce data that matches the original data noticeably better than an empirical correlation estimate. 
 
 # Appendix
 
-The code used to generate this paper is available at [this Github repository.](https://github.com/cxzhang4/seminar-CoDA/tree/main/ClusterDE)
+The code used to generate this paper and perform this analysis is available at [this Github repository.](https://github.com/cxzhang4/seminar-CoDA/tree/main/ClusterDE)
 
 ![CD19 species counts.](figures/CD19_species_counts.png){#fig-CD19_species_counts}
 
