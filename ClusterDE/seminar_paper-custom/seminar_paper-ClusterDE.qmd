@@ -89,24 +89,9 @@ Mention warnings but lack of solutions
 
 ### Toy example illustrating double dipping
 
-```{r }
-# LLM code
-library(mvtnorm)
+![](figures/fig-gray_and_clustered-S15.png)
 
-# Set random seed for reproducibility
-set.seed(123)
-
-# Generate multivariate normal data
-n <- 1000  # number of points
-mu <- c(0, 0)  # mean vector
-sigma <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)  # covariance matrix
-x <- rmvnorm(n, mean = mu, sigma = sigma)
-
-# Create scatter plot
-plot(x,
-     col = "gray", 
-     pch = 16)
-```
+![](figures/fig-boxplot-S15.png)
 
 
 ### False discoveries
