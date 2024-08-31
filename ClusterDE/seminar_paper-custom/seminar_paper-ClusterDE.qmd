@@ -59,34 +59,27 @@ Discussion of terminology (type vs. identity).
 
 ### Manual annotation using cell type markers
 
-To perform this annotation, it is common to use marker genes. In an idealized setting, a cell type would have a unique marker: a single gene such that when this gene is highly expressed in a cell, we are confident that the cell has a given type. However, 
-this is often unrealistic or unachievable: therefore, we seek some some combination of marker genes that, when taken together, identify a cell type. 
+To perform this annotation, it is common to use marker genes. In an idealized setting, a cell type would have a unique marker: a single gene such that when this gene is highly expressed in a cell, we are confident that the cell has a given type. However, this is often unrealistic or unachievable: therefore, we seek some some combination of marker genes that, when taken together, identify a cell type. 
 
-These marker genes are compiled into databases such as CellMarker 2.0, a database containing [@Hu2022].
+Consider the gene CD19. It is a marker for 220 human cell types, and 66 mouse cell types [@fig-CD19_species_counts]. Furthermore, @fig-CD19_head demonstrates how a single gene may be a marker for related cell types. Suppose that in a sample of human blood, one observes both cancerous B cells and cancerous Lymphoid cells. The expression level of CD19 alone would not help an analyst differentiate between the cell types. Therefore, it is important to discover multiple marker genes, especially for classifying similar or related cell types.
 
-(1/6)
+These marker genes are compiled into databases such as CellMarker 2.0, a database containing, at the time of initial publication, 26,915 cell marker genes for 2578 cell types [@Hu2022]. Such databases are essential to manual annotation using cell markers. 
 
-https://academic.oup.com/nar/article/51/D1/D870/6775381
-
-http://bio-bigdata.hrbmu.edu.cn/CellMarker/
-
-https://www.nature.com/articles/s41467-022-28803-w
+![Some cells marked by the CD19 gene.](figures/CD19_head.png){#fig-CD19_head}
 
 ### Automated annotation
+
+It is also possible to annotate cells in an automated manner. These automatic methods might also use marker genes, similar to manual annotation. They may also be traditional supervised machine learning classifiers. However, the quality of automated annotations depends on many factors, such as the quality of the training data and its similarity to the data that you ultimately want to classify. Heumos et al. describe and discuss automated annotation methods in much more detail [@HeumosSchaarLance2023].
 
 ## Differential expression testing
 
 Differential expression testing is the primary method by which scientists identify marker genes. If gene A is differentially expressed across two conditions, then it may be a good candidate for a marker gene.
 
-Many (most) hypothesis testing methods rely on valid p-values.
-
 ## The double-dipping issue
 
 However, when the two conditions are two clusters, we have an issue: we used our data twice. First, we clustered into two groups. Then, we tested for variation in gene expression levels between those groups. This is problematic because we found variation in the data that may be spurious, and then we tested for variation *that we already know is there*, leading to invalid inference.
 
-Mention Scanpy, Seurat defaults
-
-Mention warnings but lack of solutions
+The Seurat default DE test is susceptible to this double-dipping, and comes with a warning in [one of the vignettes](https://satijalab.org/seurat/articles/de_vignette): "the p-values obtained from this analysis should be interpreted with caution" [@SeuratV5]. This illustrates that this is a known issue that is still easy to fall prey to if an analyst is not careful.
 
 ### Toy example illustrating double dipping
 
@@ -250,7 +243,7 @@ $$
 
 Sklar's Theorem allows statisticians to use the copula approach to model the joint distribution: the goal is now to find a copula $C$ that yields a good approximation of $F$. ClusterDE makes the popular choice of the Gaussian copula to model the multivariate gene distribution, which is convenient because it has existing software implementations [see mvtnorm, numpy]. Then, to generate data from $F$ using the copula $C$, we can perform the following steps:
 
-- Estimate the correlation matrix of the target distribution (see @fig-copula-covariance).
+- Estimate the correlation matrix of the target distribution (see @fig-copula-covariance). This requires a transformation of the discrete CDF values into continuous $U(0, 1)$ variables: $U_{ij} = V_{ij} \hat{F}_j (Y_{ij}) + (1 - V_{ij}) \hat{F}_j (Y_{ij})$ [@ClusterDE].
 
 - Sample $\tilde{Z} \in \mathbb{R}^{n \times m}$ from the multivariate Gaussian distribution with a correlation (or covariance) matrix that matches the target distribution (see @fig-copula-marginals).
 
@@ -299,7 +292,7 @@ Given that the negative control generated in step 1 accomplished its goal, the t
 
 ### Clipper
 
-As input, Clipper takes contrast scores $C_1, ..., C_m$ (one for every gene).
+As input, Clipper takes contrast scores $C_1, ..., C_m$ (one for every gene). We define the contrast score below.
 
 **Definition (DE score)**: Let $P_j$ be the $p$-value resulting from the target data DE test on the $j$-th gene, $j = 1, ..., m$. Then, the DE score on the target data is defined as
 
@@ -344,7 +337,7 @@ We note the similarity of the DE score definition, and therefore interpretation,
 
 In step 4, the Clipper method for FDR control assumes that the contrast score distribution is symmetric. In practice, this symmetry assumption may be violated. ClusterDE tests the symmetry of the contrast score distribution using Yuen's trimmed mean test: if the test statistic has $p$-value $< 0.001$, reject the null hypothesis of symmetry, and perform a contrast score adjustment. It uses a one-sided "greater than" hypothesis for this test: that is, it only adjusts the contrast scores when too few contrast scores are negative. This is because the authors wanted to be conservative with their adjustment strategy, only transforming the contrast scores when they know that there would have been too many false discoveries. When there are too many negative contrast scores, these will not lead to an inflated false discovery rate, since only positive contrast scores become discoveries. 
 
-The software implementation for Yuen's trimmed mean test comes from the `PairedData` `R` package.
+The software implementation for Yuen's trimmed mean test used by the authors comes from the `PairedData` `R` package.
 
 ## How to handle multiple clusters
 
@@ -372,9 +365,7 @@ Thus far, we have considered parallel clustering on the target data and syntheti
 
 Thus far, we have used the negative binomial distribution to model the gene counts. This is because scRNA-seq data are typically overdispersed, making a Poisson model inappropriate (since in the Poisson distribution, the mean is exactly equal to the variance) [@neufeld2023negativebinomialcountsplitting].
 
-However, zero-inflated versions of these distributions can also be reasonable choices, since the count data is often verse sparse.
-
-We defer a more detailed discussion to later, where we describe *BacSC*: a pipeline for bacterial scRNA-seq analysis which defines a protocol for choosing a distribution.
+However, zero-inflated versions of these distributions can also be reasonable choices, since the count data is often very sparse. *BacSC* is a pipeline for bacterial scRNA-seq analysis which defines a protocol for choosing between these four distribution distributions. The sparsity of the count data makes it difficult for optimizers to converge when trying to fit a negative binomial distribution, making the zero-inflated version appropriate in such a situation.
 
 # Performance of ClusterDE
 
@@ -392,7 +383,7 @@ In one of the authors' benchmarks, they compared ClusterDE against count splitti
 
 # Data analysis
 
-For the seminar, we chose to investigate how an shrinkage esimate of the covariance matrix affects the synthetic null dataset (step 1 of ClusterDE).
+For the seminar, we chose to investigate how a shrinkage estimate of the correlation matrix affects the synthetic null dataset (step 1 of ClusterDE). If the Schaefer-Strimmer shrinkage estimate leads to synthetic null data that more closely matches the original data in terms of summary statistics, then it intuitively a better candidate for DE testing.
 
 ## B. subtilis 168 dataset
 
@@ -408,23 +399,57 @@ It filters out all cells with a sequencing depth less than 100: that is, cells w
 
 Note that mitochondrial genes are not filtered out here, while they would be for eukaryotic scRNA-seq data. This is because bacteria do not have mitochondria [@Ostner2024].
 
+See @fig-table_e1-oracle for a summary of the dataset, and Ostner et al. for a more detailed description [@Ostner2024].
+
+![Summary statistics for the *Bsub_minmed_PB* after quality control.](figures/table_e1-synthetic_data-oracle.png){#fig-table_e1-oracle}
+
 ## Synthetic null data generation
 
-### Schäfer-Strimmer
+Recall that the purpose of this analysis is to investigate the differences between empirical correlation estimates for null data generation, which have existing straightforward implementations, and the Schaefer-Strimmer shrinkage estimate.
 
-@Badri2020 showed that shrinkage 
+### Schaefer-Strimmer estimation of the correlation matrix
+
+Badri et al. showed that the Schaefer-Strimmer shrinkage estimate [@Badri2020](TODO). Furthermore, the sample correlation matrix is inadmissible for high-dimensional data, which is the typical setting for bacterial scRNA-seq analysis [@Badri2020, @Ostner2024]. Thus, there is a theoretical and empirical justification for using a shrinkage estimate of the correlation matrix.
+
+Ostner provided a Python implementation of the following estimator proposed by Badri et al. [@Badri2020].
+
+Let $S^*$ be the shrinkage covariance matrix. The covariances (off-diagonal entries) and variances (diagonal entries) are shrunk separately.
+
+The off-diagonal entries of $S^*$ are defined as:
+
+$$
+s_{ik}^* = r
+$$
 
 ## Results
 
-![Table E1 replica](figures/table_e1-synthetic_data.png)
+Generally, the variance of each summary statistic looks subjectively similar across the two estimation procedures. The 95% and 99% quantiles of the counts are always the same.
 
-# Simulation study
+![Summary statistics comparing the two correlation estimation strategies investigated in this analysis.](figures/table_e1-synthetic_data-mean_var.png)
+
+@fig-table-oracle_with_means displays the mean summary statistic for each estimation strategy along with the original data. From this table, we can see that the Schaefer-Strimmer estimates yield synthetic null datasets with systematically larger counts, and larger sequencing depths. The empirical correlation estimates match the original data better in terms of median sequencing depth, maximum sequencing depth, percentage of zero counts, and maximum count.
+
+![Summary statistics comparing the two correlation estimation strategies investigated in this analysis.](figures/table_e1-oracle_with_means.png){#fig-table-oracle_with_means}
 
 # Discussion
 
-Different copula generation strategies.
+In terms of the summary statistics examined here, the two correlation estimators do not look substantially different. However, one surprising result is that the Schaefer-Strimmer datasets have systematically larger maximum counts, where the minimum maximum count for a Schaefer-Strimmer dataset is higher than the maximum maximum count for an empirical correlation dataset. This is surprising because the Schaefer-Strimmer estimate is a shrinkage estimate, and we would expect that if the variances of the count distributions have been shrunk, then we would observe extremely large counts less often. Further exploration is required to determine the cause of this phenomenon.
+
+No differential expression testing was conducted here, so the sensitivity of the actual DE genes outputted by ClusterDE to the correlation estimator is currently unknown. Based on these initial results, we do not expect a substantial difference in the quality of DE genes outputted by ClusterDE.
+
+# Conclusion
+
+Cell annotation provides analysts and domain experts with important information about their scRNA-seq samples. While various forms of annotation exist, including completely automated annotation, one of the most popular strategies for annotation is manual annotation based on a set of marker genes. To discover new marker genes, analysts often perform differential expression testing, in which they first cluster their cells into two groups, and then test each gene for differences between the groups. However, in this process,  
 
 # Appendix
+
+The code used to generate this paper is available at [this Github repository.](https://github.com/cxzhang4/seminar-CoDA/tree/main/ClusterDE)
+
+![CD19 species counts.](figures/CD19_species_counts.png){#fig-CD19_species_counts}
+
+![Summary statistics for all synthetic datasets generated with Schaefer-Strimmer correlation estimates.](figures/table_e1-synthetic_data-schaefer_strimmer.png)
+
+![Summary statistics for all datasets generated with empirical correlation estimates.](figures/table_e1-synthetic_data-empirical.png)
 
 # References
 

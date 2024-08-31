@@ -1,0 +1,27 @@
+\begin{tabular}{llrrrrrrrrr}
+\toprule
+ & Dataset & Cells & Genes & Minimum seq. depth & Maximum seq. depth & Median seq. depth & Zero counts (percentage) & Maximum count & 95% quantile & 99% quantile \\
+\midrule
+Bsub_minmed_PB (original) & Bsub_minmed_PB (original) & 2784 & 2952 & 141.000000 & 1289.000000 & 325.000000 & 0.911000 & 45.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 1 & Synthetic null with Schaefer-Strimmer correlation, random seed 1 & 5568 & 2952 & 91.000000 & 1465.000000 & 378.500000 & 0.908000 & 117.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 2 & Synthetic null with Schaefer-Strimmer correlation, random seed 2 & 5568 & 2951 & 69.000000 & 1657.000000 & 378.000000 & 0.908000 & 116.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 3 & Synthetic null with Schaefer-Strimmer correlation, random seed 3 & 5568 & 2950 & 77.000000 & 1498.000000 & 376.000000 & 0.908000 & 95.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 4 & Synthetic null with Schaefer-Strimmer correlation, random seed 4 & 5568 & 2951 & 90.000000 & 1621.000000 & 372.000000 & 0.908000 & 145.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 5 & Synthetic null with Schaefer-Strimmer correlation, random seed 5 & 5568 & 2952 & 103.000000 & 1446.000000 & 374.000000 & 0.908000 & 102.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 6 & Synthetic null with Schaefer-Strimmer correlation, random seed 6 & 5568 & 2951 & 70.000000 & 1452.000000 & 377.000000 & 0.907000 & 90.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 7 & Synthetic null with Schaefer-Strimmer correlation, random seed 7 & 5568 & 2951 & 82.000000 & 1381.000000 & 377.000000 & 0.907000 & 91.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 8 & Synthetic null with Schaefer-Strimmer correlation, random seed 8 & 5568 & 2952 & 84.000000 & 1552.000000 & 374.000000 & 0.908000 & 127.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 9 & Synthetic null with Schaefer-Strimmer correlation, random seed 9 & 5568 & 2951 & 95.000000 & 1403.000000 & 377.000000 & 0.908000 & 79.000000 & 1.000000 & 2.000000 \\
+Synthetic null with Schaefer-Strimmer correlation, random seed 10 & Synthetic null with Schaefer-Strimmer correlation, random seed 10 & 5568 & 2952 & 81.000000 & 1467.000000 & 375.000000 & 0.907000 & 86.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 1 & Synthetic null with empirical correlation, random seed 1 & 5568 & 2950 & 79.000000 & 1277.000000 & 337.000000 & 0.911000 & 78.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 2 & Synthetic null with empirical correlation, random seed 2 & 5568 & 2951 & 73.000000 & 1394.000000 & 341.000000 & 0.911000 & 60.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 3 & Synthetic null with empirical correlation, random seed 3 & 5568 & 2952 & 61.000000 & 1150.000000 & 340.000000 & 0.910000 & 60.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 4 & Synthetic null with empirical correlation, random seed 4 & 5568 & 2952 & 88.000000 & 1361.000000 & 338.000000 & 0.911000 & 69.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 5 & Synthetic null with empirical correlation, random seed 5 & 5568 & 2951 & 79.000000 & 1223.000000 & 338.000000 & 0.911000 & 53.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 6 & Synthetic null with empirical correlation, random seed 6 & 5568 & 2951 & 63.000000 & 1128.000000 & 341.000000 & 0.910000 & 57.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 7 & Synthetic null with empirical correlation, random seed 7 & 5568 & 2952 & 78.000000 & 1163.000000 & 339.000000 & 0.911000 & 56.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 8 & Synthetic null with empirical correlation, random seed 8 & 5568 & 2951 & 80.000000 & 1350.000000 & 344.000000 & 0.910000 & 71.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 9 & Synthetic null with empirical correlation, random seed 9 & 5568 & 2952 & 72.000000 & 1209.000000 & 340.000000 & 0.911000 & 69.000000 & 1.000000 & 2.000000 \\
+Synthetic null with empirical correlation, random seed 10 & Synthetic null with empirical correlation, random seed 10 & 5568 & 2952 & 77.000000 & 1178.000000 & 341.000000 & 0.910000 & 45.000000 & 1.000000 & 2.000000 \\
+\bottomrule
+\end{tabular}
