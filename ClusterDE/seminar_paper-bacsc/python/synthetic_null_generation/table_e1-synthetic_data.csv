@@ -2,3 +2,5 @@ Dataset,Cells,Genes,Minimum seq. depth,Maximum seq. depth,Median seq. depth,Zero
 Bsub_minmed_PB (original),2784,2952,141.0,1289.0,325.0,0.911,45.0,1.0,2.0
 Synthetic null with Schaefer-Strimmer correlation,5568,2951,83.0,1354.0,379.0,0.907,129.0,1.0,2.0
 Synthetic null with empirical correlation,5568,2952,80.0,1422.0,340.0,0.911,81.0,1.0,2.0
+"Schaefer-Strimmer, generated recently",5568,2951,83.0,1354.0,379.0,0.907,129.0,1.0,2.0
+"Empirical, generated recently",5568,2950,94.0,1075.0,344.0,0.911,59.0,1.0,2.0

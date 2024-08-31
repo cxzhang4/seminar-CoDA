@@ -5,5 +5,7 @@
 Bsub_minmed_PB (original) & Bsub_minmed_PB (original) & 2784 & 2952 & 141.000000 & 1289.000000 & 325.000000 & 0.911000 & 45.000000 & 1.000000 & 2.000000 \\
 Synthetic null with Schaefer-Strimmer correlation & Synthetic null with Schaefer-Strimmer correlation & 5568 & 2951 & 83.000000 & 1354.000000 & 379.000000 & 0.907000 & 129.000000 & 1.000000 & 2.000000 \\
 Synthetic null with empirical correlation & Synthetic null with empirical correlation & 5568 & 2952 & 80.000000 & 1422.000000 & 340.000000 & 0.911000 & 81.000000 & 1.000000 & 2.000000 \\
+Schaefer-Strimmer, generated recently & Schaefer-Strimmer, generated recently & 5568 & 2951 & 83.000000 & 1354.000000 & 379.000000 & 0.907000 & 129.000000 & 1.000000 & 2.000000 \\
+Empirical, generated recently & Empirical, generated recently & 5568 & 2950 & 94.000000 & 1075.000000 & 344.000000 & 0.911000 & 59.000000 & 1.000000 & 2.000000 \\
 \bottomrule
 \end{tabular}

@@ -118,7 +118,8 @@ def main(corr_type: str, n_datasets: int):
 
     importlib.reload(cd)
 
-    use_schaefer_strimmer = corr_type == "schaefer_strimmer"
+    use_schaefer_strimmer = (corr_type == "schaefer_strimmer")
+    print(use_schaefer_strimmer)
 
     if use_schaefer_strimmer:
         # Generate scaling matrix
@@ -130,7 +131,7 @@ def main(corr_type: str, n_datasets: int):
     else:
         cf = 1
 
-
+    print(cf)
     # ### Generate synthetic null data
 
     # In[9]:
@@ -141,7 +142,7 @@ def main(corr_type: str, n_datasets: int):
         n, p = data_gene.X.shape
         data_null_gen, R_est = cd.generate_nb_data_copula(data_gene, rng_seed=5678, nb_flavor="statsmod_auto",
                                                           auto_dist=True, correct_var=use_schaefer_strimmer, return_R=True, new_data_shape=(2*n, p),
-                                                          corr_factor=cf, R_est=R_est_noscale, check_pd=False, min_nonzero=2)
+                                                          corr_factor=cf, R_est=None, check_pd=False, min_nonzero=2)
 
 
         # In[10]:
@@ -282,7 +283,7 @@ def main(corr_type: str, n_datasets: int):
         # In[31]:
 
 
-        sc.pl.umap(data_null_gen, color="total_counts", alpha=1, cmap="viridis", title="Null data")
+        # sc.pl.umap(data_null_gen, color="total_counts", alpha=1, cmap="viridis", title="Null data")
         # plt.show()
 
         plt.savefig(output_dir + "/synthetic_null-umap-blob-" + str(i + 1) + ".png")

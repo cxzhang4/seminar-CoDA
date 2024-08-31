@@ -39,13 +39,17 @@ dataset_paths = [
     # "../../data/probe_Bac_scRNAseq_Rosenthal/B subtilis minimal media/synthetic-schaefer_strimmer-filtered_data_maxpool_processed.h5ad"
     # "../../data/probe_Bac_scRNAseq_Rosenthal/B subtilis minimal media/null_data_opt_tutorial.h5ad"
     "notebook-synthetic-schaefer_strimmer-filtered_data_maxpool_processed-260824.h5ad",
-    "notebook-synthetic-empirical_corr-filtered_data_maxpool_processed-260824.h5ad"
+    "notebook-synthetic-empirical_corr-filtered_data_maxpool_processed-260824.h5ad",
+    "synthetic_null_data/schaefer_strimmer/synthetic-filtered_data_maxpool_processed.h5ad",
+    "synthetic_null_data/empirical/synthetic-filtered_data_maxpool_processed-1.h5ad"
 ]
 
 dataset_names = [
     "Bsub_minmed_PB (original)",
     "Synthetic null with Schaefer-Strimmer correlation",
     "Synthetic null with empirical correlation",
+    "Schaefer-Strimmer, generated recently",
+    "Empirical, generated recently"
 ]
 
 datasets = [sc.read_h5ad(p) for p in dataset_paths]
