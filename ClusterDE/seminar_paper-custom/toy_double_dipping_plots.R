@@ -30,7 +30,7 @@ p_mvn_clustered <- ggplot(df, aes(x = X1, y = X2, color = cluster)) +
 
 ggarrange(p_mvn_gray, p_mvn_clustered) |>
   ggexport(filename = "../seminar_paper-custom/figures/fig-gray_and_clustered-S15.png",
-           width = 800, height = 500)
+           width = 750, height = 300)
 
 stat.test <- compare_means(
   c(X1, X2) ~ cluster, data = df,
@@ -53,6 +53,6 @@ p2 <- ggboxplot(df, x = "cluster", y = "X2",
 
 ggarrange(p1, p2, common.legend = TRUE) |>
   ggexport(filename = "../seminar_paper-custom/figures/fig-boxplot-S15.png",
-           width = 800, height = 400)
+           width = 750, height = 250)
 
 # ggarrange(p_mvn_gray, p_mvn_clustered, p1, p2)

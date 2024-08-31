@@ -10,13 +10,14 @@ abstract: |
   However, this procedure constitutes "double dipping", as it first clusters
   the data to identify cell types, and then uses those same clusters to identify 
   cell-type marker genes. This leads to an inflated FDR for DE genes. 
-  @ClusterDE propose ClusterDE, a post-clustering DE method that 
+  Song et al. propose ClusterDE [@ClusterDE], a post-clustering DE method that 
   controls the FDR of DE genes. ClusterDE generates a synthetic null dataset
   that preserves the structure of the real data, 
   computes differences between this null dataset and the real data, then performs 
   FDR control on the results. Simulations and real data analysis demonstrate
   that ClusterDE controls the FDR and identifies cell-type marker genes as
-  top DE genes, successfully distinguishing them from housekeeping genes. Furthermore, investigation of the covariance
+  top DE genes, successfully distinguishing them from housekeeping genes. 
+  Furthermore, investigation of the covariance 
 index-terms: 
   - Double-dipping
   - Differential expression
@@ -52,9 +53,9 @@ bibliography: refs.bib
 
 Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in immune response. They produce "cytokines, which are signaling proteins that activate other parts of the human immune system" [@GlossaryLymphocyte]. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell type annotation is required in order to obtain this information from e.g. a blood sample.
 
-TODO: distinction between different types of T cells requires better annotation methods.
+Distinction between different types of T cells requires better annotation methods.
 
-TODO: discussion of terminology (type vs. identity).
+Discussion of terminology (type vs. identity).
 
 ### Manual annotation using cell type markers
 
@@ -77,7 +78,7 @@ https://www.nature.com/articles/s41467-022-28803-w
 
 Differential expression testing is the primary method by which scientists identify marker genes. If gene A is differentially expressed across two conditions, then it may be a good candidate for a marker gene.
 
-(TODO: define validity)
+Many (most) hypothesis testing methods rely on valid p-values.
 
 ## The double-dipping issue
 
@@ -89,16 +90,21 @@ Mention warnings but lack of solutions
 
 ### Toy example illustrating double dipping
 
-![](figures/fig-gray_and_clustered-S15.png)
+The example comes from the ClusterDE paper (see Figure S15, [@ClusterDE]). Suppose we only have 2 genes. However, they come from a single homogeneous population (in this case, the data is generated from a single multivariate normal distribution). 
+
+Now, pretend that we don't know that the data is homogeneous. We decide to cluster the data into 2 groups, since we want to perform differential expression testing. We observe the clustering in @fig-gray_and_clustered. Because we forced the clustering algorithm to find two groups (in this case, ran $k$-means with $k = 2$), the algorithm found some variation (along the max-variance direction) where none truly exists.
+
+![](figures/fig-gray_and_clustered-S15.png){#fig-gray_and_clustered}
+
+Next, we perform differential expression testing for each gene, and compute very low $p$-values. Therefore, we declare that both genes $X1$ and $X2$ are differentially expressed, when in reality they come from the same cell population. Why do we get such low $p$-values when the null hypothesis is true? Since our inference is conditional on the clusters, and the clustering algorithm found spurious variation, the clustering encourages discovery of DE genes even when none exist. The same principle generalizes when we have thousands of genes, as is the case in realistic datasets. 
 
 ![](figures/fig-boxplot-S15.png)
 
-
 ### False discoveries
 
-Consider the notation defined in @fig-fdr-islr.
+As we are conducting $m$ hypothesis tests, we are in a multiple testing situation. Consider the notation defined in @fig-fdr-islr for the types and numbers of possible decisions.
 
-Let $\frac{V}{R}$ be the **false discovery proportion**. While this already looks like the thing we want to control, it is impossible to control directly. This is because when we are given a single particular dataset, we have no guarantees about the values of $V$ and $F$, i.e. which hypotheses are true or false. If we had such guarantees, then we wouldn't need to perform hypothesis tests in the first place. However, we can control the expected false discovery proportion [@ISLR2], which we call the **false discovery rate** $E[\frac{V}{R}]$. 
+Let $\frac{V}{R}$ be the **false discovery proportion**. While this already looks like the thing we want to control, it is impossible to control directly. This is because when we are given a single particular dataset, we have no guarantees about the values of $V$ and $F$, i.e. which hypotheses are true or false. If we had such guarantees, then we wouldn't need to perform hypothesis tests in the first place. However, we can control the expected false discovery proportion, which we call the **false discovery rate** $E[\frac{V}{R}]$ [@ISLR2]. 
 
 ![A table defining notation for various decisions resulting from hypothesis tests. Table 13.2 from ISLR [@ISLR2].](figures/islr-table.png){#fig-fdr-islr}
 
@@ -410,20 +416,7 @@ Note that mitochondrial genes are not filtered out here, while they would be for
 
 ## Results
 
-```{r}
-# library(flextable)
-# library(tinytable)
-# library(readr)
-```
-
-
-```{r}
-# table_e1 = read_csv("../seminar_paper-bacsc/python/reproduce_results/table_e1.csv")
-# flextable(table_e1)
-# 
-# table_e1_synthetic = read_csv("../seminar_paper-bacsc/python/synthetic_null_generation/table_e1-synthetic_data.csv")
-# flextable(table_e1_synthetic)
-```
+![Table E1 replica](figures/table_e1-synthetic_data.png)
 
 # Simulation study
 
