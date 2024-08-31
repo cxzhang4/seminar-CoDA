@@ -332,13 +332,13 @@ We discuss some of the benchmarks performed by the ClusterDE authors.
 
 In one of the authors' benchmarks, they compared ClusterDE against count splitting, the TN test, and the default Seurat pipeline on four PBMC datasets. These datasets were chosen because they were clustered poorly, and therefore good differential expression performance is defined by the discovery of no DE genes (see @fig-pbmc-no_de_genes).
 
-![Figure S9 from the ClusterDE paper. 8 PBMC datasets ordered by Seurat clustering accuracy, from highest to lowest. The dashed line divides the more well-clustered datasets from the poorly clustered datasets.[@ClusterDE].](figures/S9.jpg)
+![Figure S9 from the ClusterDE paper. 8 PBMC datasets ordered by Seurat clustering accuracy, from highest to lowest. The dashed line divides the more well-clustered datasets (top) from the poorly clustered datasets (bottom) [@ClusterDE].](figures/S9.jpg)
 
 ![Figure S10 from the ClusterDE paper. No DE genes should be discovered, since the clustering quality is poor. On most of the datasets, and with most of the types of tests, ClusterDE accomplishes this  [@ClusterDE].](figures/S11.png){#fig-pbmc-no_de_genes}
 
 ### Performance against other null generation strategies
 
-## Real data analysis
+## Data analysis
 
 For the seminar, we chose to investigate how an shrinkage esimate of the covariance matrix affects the synthetic null dataset (step 1 of ClusterDE).
 

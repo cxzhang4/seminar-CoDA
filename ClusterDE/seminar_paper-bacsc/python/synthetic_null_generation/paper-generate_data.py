@@ -140,7 +140,7 @@ def main(corr_type: str, n_datasets: int):
 
         importlib.reload(cd)
         n, p = data_gene.X.shape
-        data_null_gen, R_est = cd.generate_nb_data_copula(data_gene, rng_seed=5678, nb_flavor="statsmod_auto",
+        data_null_gen, R_est = cd.generate_nb_data_copula(data_gene, rng_seed=i, nb_flavor="statsmod_auto",
                                                           auto_dist=True, correct_var=use_schaefer_strimmer, return_R=True, new_data_shape=(2*n, p),
                                                           corr_factor=cf, R_est=None, check_pd=False, min_nonzero=2)
 
