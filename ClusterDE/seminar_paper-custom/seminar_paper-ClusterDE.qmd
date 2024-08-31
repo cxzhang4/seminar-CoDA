@@ -53,10 +53,6 @@ bibliography: refs.bib
 
 Understanding which types of cells are in a data sample allows an analyst to better make use of existing knowledge about those cells. "Cell annotation" is the process of labeling cells in a sample of data. In this paper, the focus is on annotating the "cell type" of each cell: a cellular phenotype that is robust across datasets [@HeumosSchaarLance2023]. For example, plasma B cells are one type of white blood cell that are involved in the human body's immune response by secreting antibodies [@HeumosSchaarLance2023]. T cells are another type of white blood cell that are also involved in immune response. They produce "cytokines, which are signaling proteins that activate other parts of the human immune system" [@GlossaryLymphocyte]. A scientist interested in a patient's immune response may be interested in the counts of B cells and T cells (and their subtypes): for example, in order to better understand the roles of each cell, or how they affect patient outcomes. Cell type annotation is required in order to obtain this information from e.g. a blood sample.
 
-Distinction between different types of T cells requires better annotation methods.
-
-Discussion of terminology (type vs. identity).
-
 ### Manual annotation using cell type markers
 
 To perform this annotation, it is common to use marker genes. In an idealized setting, a cell type would have a unique marker: a single gene such that when this gene is highly expressed in a cell, we are confident that the cell has a given type. However, this is often unrealistic or unachievable: therefore, we seek some some combination of marker genes that, when taken together, identify a cell type. 
@@ -89,9 +85,9 @@ Now, pretend that we don't know that the data is homogeneous. We decide to clust
 
 ![](figures/fig-gray_and_clustered-S15.png){#fig-gray_and_clustered}
 
-Next, we perform differential expression testing for each gene, and compute very low $p$-values. Therefore, we declare that both genes $X1$ and $X2$ are differentially expressed, when in reality they come from the same cell population. Why do we get such low $p$-values when the null hypothesis is true? Since our inference is conditional on the clusters, and the clustering algorithm found spurious variation, the clustering encourages discovery of DE genes even when none exist. The same principle generalizes when we have thousands of genes, as is the case in realistic datasets. 
+Next, we perform differential expression testing for each gene, and compute very low $p$-values. Therefore, we declare that both genes $X1$ and $X2$ are differentially expressed, when in reality they come from the same cell population (see @fig-toy-boxplot). Why do we get such low $p$-values when the null hypothesis is true? Since our inference is conditional on the clusters, and the clustering algorithm found spurious variation, the clustering encourages discovery of DE genes even when none exist. The same principle generalizes when we have thousands of genes, as is the case in realistic datasets. 
 
-![](figures/fig-boxplot-S15.png)
+![](figures/fig-boxplot-S15.png){#fig-toy-boxplot}
 
 ### False discoveries
 
@@ -280,7 +276,7 @@ The Leiden algorithm is supported by both `Scanpy` and `Seurat`. However, since 
 
 DE tests are performed as usual on the two clusters.
 
-Define Wilcoxon rank-sum test. `presto` package in R.
+ClusterDE allows any differential expression test. The authors benchmarked many tests, including: the Wilcoxon rank-sum test, t-test, negative binomial GLM, likelihood ratio test on logistic regression for cluster membership. In Seurat, the default is the Wilcoxon rank sum test, which *BacSC* also uses [@SeuratV5, @Ostner2024].
 
 ## Step 4: false discovery rate control using Clipper
 
@@ -337,7 +333,9 @@ $$
 
 Recall that we are only going to consider some section of the right tail of this distribution as discoveries. How can we choose which section? 
 
-Let $t > 0$ be arbitrary. We know 
+Let $t > 0$ be arbitrary. Under the null hypothesis, the right tail of values greater than $t$ is the same size as the left tail of values less than $-t$. Therefore, we can use the size of the left tail to estimate the size of the orange right tail in @fig-clipper_cutoff-ipad, which we cannot see directly. The rest of the right tail should therefore constitute true discoveries. 
+
+Furthermore, in the defintion for the cutoff, we take the minimum because we seek to maximize the number of discoveries we can make while still satisfying the pre-defined FDR threshold.
 
 ![Motivation for the choice of contrast score cutoff. The orange tails represent the distribution under the null hypothesis. Since this distribution is symmetric, we know the rest of the right tail represents true discoveries, and we can use this symmetry to estimate the FDR at a given threshold value.](figures/clipper_cutoff.jpg){#fig-clipper_cutoff-ipad}
 
@@ -345,11 +343,11 @@ Let $t > 0$ be arbitrary. We know
 
 ## Count splitting
 
-## TN Test
+Count splitting is a strategy to create independent test and training sets: essentially, two datasets so that we can avoid double-dipping. Neufeld et al. developed *Poisson count splitting*, using a binomial sample from each count to split the data [@neufeld2022inferencelatentvariableestimation]. Later, Neufeld et al. developed *Negative binomial count splitting* to handle overdispersed data, using Dirichlet-multinomial sampling to perform the splitting [@neufeld2023negativebinomialcountsplitting]. Furthermore, Dharamsi et al. has generalized this splitting into the concept of data thinning, which they prove is possible for many exponential family distributions [@dharamshi2023generalizeddatathinningusing].
 
-## "Traditional" FDR control methods
+However, count splitting suffers from an inability to account for gene-gene correlations, especially when compared to ClusterDE (see @fig-uniform_p_values).
 
-(mention FDR control like Benjamini-Hochberg)
+![Figure S2 from the ClusterDE paper. In the middle column, countsplit and some other DE methods are able to achieve uniform p-values and therefore valid inference for uncorrelated genes (the top of each row). However, the uniformity assumption of the p-values is violated for each type of test when the genes are correlated (the bottom of each row) [@ClusterDE].](figures/F4.large.jpg){#fig-uniform_p_values}
 
 # Considerations for using ClusterDE in practice
 
@@ -377,10 +375,6 @@ ClusterDE is only designed to handle two cell clusters. Therefore, the authors r
 
 ClusterDE does not perform automatic cluster merging. Its purpose and focus is to identify trustworthy DE genes that can be analyzed downstream to evaluate their appropriateness as marker genes. ClusterDE therefore functions as a tool to help researchers "explore the functional and molecular characteristics of clusters" [@ClusterDE], not as an automated decision-maker [@ClusterDE].
 
-## Whether you should cluster once or twice
-
-Thus far, we have considered parallel clustering on the target data and synthetic null data. However, this is not strictly necessary. ClusterDE 
-
 ## Choosing a distribution to model the counts
 
 Thus far, we have used the negative binomial distribution to model the gene counts. This is because scRNA-seq data are typically overdispersed, making a Poisson model inappropriate (since in the Poisson distribution, the mean is exactly equal to the variance) [@neufeld2023negativebinomialcountsplitting].
@@ -401,7 +395,9 @@ In one of the authors' benchmarks, they compared ClusterDE against count splitti
 
 ## Performance against other null generation strategies
 
-Knockoffs
+The ClusterDE authors also considered alternative strategies for generating their synthetic null datasets. One is model-X knockoffs, a method for feature selection in supervised learning [@Candes2018]. Another was permuting the genes independently across all cells: the idea here is that, in a homogenous cell population, each expression count is exchangeable between any two cells. However, the copula approach in scDesign3 outperformed these two alternatives (see @fig-power).
+
+![Figure S7 from the ClusterDE paper [@ClusterDE]. In most cases, ClusterDE has both a better-controlled FDR and higher power than the other null generation strategies considered here.](figures/F9.large.jpg){#fig-power}
 
 # Data analysis
 
@@ -411,7 +407,9 @@ For the seminar, we chose to investigate how a shrinkage estimate of the correla
 
 We chose to investigate the *Bsub_minmed_PB* dataset. This is a dataset that was generated by ProBac sequencing (ProBac-seq), in order to validate the performance of this method. ProBac-seq uses messenger RNA-specific probes, and multiple probes per organism, to sequence bacterial samples [@McNulty2023], [@Samanta2024]. The *Bsub_minmed_PB* dataset contains the *B. subtilis 168* strain, "grown to late exponential phase in M9 minimal media supplemented with malate" [see Table 1, @Ostner2024], and [@McNulty2023].
 
-This data is analyzed in [@Ostner2024], which proposes *BacSC*, a pipeline for analysis of bacterial scRNA-seq data, which we use and describe below.
+This data is analyzed in [@Ostner2024], which proposes *BacSC*, a pipeline for analysis of bacterial scRNA-seq data, which we use and describe below. The datasets analyzed in the BacSC paper are described in @fig-table_e1-reproduced.
+
+![A reproduction of Table E1 from *BacSC* [@Ostner2024]](figures/table_e1-reproduced.png){#fig-table_e1-reproduced}
 
 ### Preprocessing
 
@@ -431,7 +429,7 @@ Recall that the purpose of this analysis is to investigate the differences betwe
 
 ### Schaefer-Strimmer estimation of the correlation matrix
 
-Badri et al. showed that the Schaefer-Strimmer shrinkage estimate [@Badri2020](TODO). Furthermore, the sample correlation matrix is inadmissible for high-dimensional data, which is the typical setting for bacterial scRNA-seq analysis [@Badri2020, @Ostner2024]. Thus, there is a theoretical and empirical justification for using a shrinkage estimate of the correlation matrix.
+Badri et al. showed that the Schaefer-Strimmer shrinkage estimate [@Badri2020]. Furthermore, the sample correlation matrix is inadmissible for high-dimensional data, which is the typical setting for bacterial scRNA-seq analysis [@Badri2020, @Ostner2024]. Thus, there is a theoretical and empirical justification for using a shrinkage estimate of the correlation matrix.
 
 Ostner provided a Python implementation of the following estimator proposed by Badri et al. [@Badri2020].
 
@@ -440,10 +438,28 @@ Let $S^*$ be the shrinkage covariance matrix. The covariances (off-diagonal entr
 The off-diagonal entries of $S^*$ are defined as:
 
 $$
-s_{ik}^* = r
+s_{ik}^* = \hat{r}_{ik}^* \sqrt{\hat{s}_{ii}\hat{s}_{kk}}
+$$
+, where the shrunk off-diagonial correlation estimates are defined as
+
+$$
+\hat{r}_{ik}^* = (1 - \hat{\lambda}_1^*) \hat{r}_{ik}
 $$
 
+and $\hat{s}_ii$ and $\hat{r}_ik$ denote the sample variance and correlation, respectively.
+
+The estimator shrinks the diagonal entries (variances) towards the median sample variance $\upsilon$ by computing
+
+$$
+\hat{s}_{ii}^* = \hat{\lambda}^2 \upsilon + (1 - \hat{\lambda}^2) \hat{s}_{ii}
+$$
+
+(Notation from [@Badri2020].)
+
 ## Results
+
+Note that the synthetic null datasets were intentionally generated with $2n$ cells, as is suggested in the $BacSC$ code.
+Therefore, deviation in cell counts occurs by design and is not relevant to this analysis.
 
 Generally, the variance of each summary statistic looks subjectively similar across the two estimation procedures. The 95% and 99% quantiles of the counts are always the same.
 
@@ -459,15 +475,13 @@ In terms of the summary statistics examined here, the two correlation estimators
 
 No differential expression testing was conducted here, so the sensitivity of the actual DE genes outputted by ClusterDE to the correlation estimator is currently unknown. Based on these initial results, we do not expect a substantial difference in the quality of DE genes outputted by ClusterDE.
 
-Further investigations into ClusterDE could include a benchmark of different copula families. We only considered the Gaussian copula here. The ClusterDE package also supports vine copulas, which they say are better but computationally very expensive. A more detailed investigation of the computation vs. performance tradeoff could be valuable here.
-
-Furthermore, *BacSC* implements some extensions to the ClusterDE method. 
+Further investigations into ClusterDE could include a benchmark of different copula families. We only considered the Gaussian copula here. The ClusterDE package also supports vine copulas, which they say are better but computationally very expensive [@ClusterDEManual]. A more detailed investigation of the computation vs. performance tradeoff could be valuable here.
 
 # Conclusion
 
-Cell annotation provides analysts and domain experts with important information about their scRNA-seq samples. While various forms of annotation exist, including completely automated annotation, one of the most popular strategies for annotation is manual annotation based on a set of marker genes. To discover new marker genes, analysts often perform differential expression testing, in which they first cluster their cells into two groups, and then test each gene for differences between the groups. However, this process double-dips, and therefore leads to an inflated false discovery rate if executed naively. Various methods exist to counteract this, but ClusterDE performs the best on benchmarks. ClusterDE's use of a synthetic null dataset as a negative control, combined with its choice of cutoff using Clipper, allow it to successfully control the false discovery rate. 
+Cell annotation provides analysts and domain experts  with important information about their scRNA-seq samples. While various forms of annotation exist, including completely automated annotation, one of the most popular strategies for annotation is manual annotation based on a set of marker genes. To discover new marker genes, analysts often perform differential expression testing, in which they first cluster their cells into two groups, and then test each gene for differences between the groups. However, this process double-dips, and therefore leads to an inflated false discovery rate if executed naively. Various methods exist to counteract this, but ClusterDE performs the best on benchmarks. ClusterDE's use of a synthetic null dataset as a negative control, combined with its choice of cutoff using Clipper, allow it to successfully control the false discovery rate. 
 
-In this paper, a shrinkage estimate of the covariance matrix was explored as a potential extension to ClusterDE's null data generation step. Despite previous theoretical and empirical justifications for its use, this Schaefer-Strimmer covariance estimate does not produce data that matches the original data noticeably better than an empirical correlation estimate. 
+In this paper, a shrinkage estimate of the correlation matrix was explored as a potential extension to ClusterDE's null data generation step. Despite previous theoretical and empirical justifications for its use, this Schaefer-Strimmer correlation estimate does not produce data that matches the original data noticeably better than an empirical correlation estimate. 
 
 # Appendix
 

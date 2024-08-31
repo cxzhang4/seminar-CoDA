@@ -82,6 +82,7 @@ summary_stats = {
 
 summary_df = pd.DataFrame(summary_stats, index=dataset_names)
 summary_df.columns = ["Cells", "Genes", "Minimum seq. depth", "Maximum seq. depth", "Median seq. depth", "Zero counts (percentage)", "Maximum count", "95% quantile", "99% quantile"]
+summary_df.insert(0, "Dataset", dataset_names)
 
 summary_df.to_csv("table_e1.csv", index = False)
 with open("table_e1-latex.txt", "w") as summary_df_latex:
